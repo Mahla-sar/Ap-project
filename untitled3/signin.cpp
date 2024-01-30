@@ -54,7 +54,7 @@ void signin::on_buttonBox_2_accepted()
     user["email"] = mail;
     user["age"] = age;
     user["gender"] = gen;
-    user["orgnization"]=QJsonArray();
+    //user["orgnization"]=QJsonArray();
 
     bool isAgeValid;
     int ageInt = age.toInt(&isAgeValid);
