@@ -10,8 +10,9 @@
 #include <QCryptographicHash>
 #include <QMessageBox>
 #include "taski.h"
-#include "userManager.h"
+//#include "userManager.h"
 #include "org_manager.h"
+#include "team_manager.h"
 
 new_org::new_org(QWidget *parent)
     : QDialog(parent),
@@ -36,8 +37,14 @@ void new_org::on_buttonBox_accepted()
     //my_org.addMemberToOrganization(name, "b");
     //my_org.promoteMemberToAdminInOrganization(name, "b");
     //my_org.demoteAdminToMember(name , "b");
-    my_org.editOrganizationName(name, "new_name_test");
-
+    //my_org.editOrganizationName(name, "new_name_test");
+    team_manager my_team;
+    //my_team.deleteTeam("b_org1" , "team3");
+    //my_team.addMemberToTeam("a3", "team2", "b");
+    //my_team.removeMemberFromTeam("a3", "team2", "b");
+    //my_team.demoteHeadToMemberInTeam("b_org1", "team3" , "a");
+    //void promoteMemberToHeadTeam(const QString& orgName, const QString& memberName);
+    my_team.renameTeam("a3" , "team2" , "team0");
     //emit add_neworg(name);
     this->close();
 }

@@ -10,10 +10,11 @@ class org_manager : public QDialog
     Q_OBJECT
 
 public:
-//    explicit org_manager(QWidget *parent = nullptr);
-//    ~org_manager();
-//    void deleteOrganization(const QString& orgName);
+    //    explicit org_manager(QWidget *parent = nullptr);
+    //    ~org_manager();
+    //    void deleteOrganization(const QString& orgName);
     static QString get_organization();
+    static void setorg(const QString &orgname);
     void creat_organization(const QString& name);
     void deleteOrganization(const QString& orgName);
     void addMemberToOrganization(const QString& orgName, const QString& memberName);
@@ -26,13 +27,14 @@ public:
 private :
     static QString OrganizationName;
 
-//private:
-//    //ui::org_manager *ui;
-//    // Add any necessary private members for managing the organization
-//    // ...
 
-//    // Declare functions for managing the organization
-//    void editOrganization(const QString& orgName, const QJsonObject& newOrgData);
+    //private:
+    //    //ui::org_manager *ui;
+    //    // Add any necessary private members for managing the organization
+    //    // ...
+
+    //    // Declare functions for managing the organization
+    //    void editOrganization(const QString& orgName, const QJsonObject& newOrgData);
 };
 
 #endif // ORG_MANAGER_H

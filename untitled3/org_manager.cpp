@@ -19,7 +19,11 @@ QString org_manager::OrganizationName ;
 QString org_manager::get_organization() {
     return OrganizationName;
 }
-
+///////
+void org_manager::setorg(const QString &orgname) {
+    OrganizationName = orgname;
+}
+////////
 void org_manager::creat_organization(const QString& name){
     QString currentDirtext = QCoreApplication::applicationDirPath();
     QString filePathtext = currentDirtext + QDir::separator() + "text.json";
@@ -69,6 +73,7 @@ void org_manager::creat_organization(const QString& name){
     QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
     QJsonObject org;
     org["name"] = name;
+    OrganizationName = name;
     org["members"] = QJsonArray();
     org["admins"] = QJsonArray();
     org["teams"] = QJsonArray();
@@ -196,7 +201,7 @@ void org_manager::deleteOrganization(const QString& orgName)
     // Save the changes back to text.json
     jsonObjecttext[loggedInUsername] = user;
     jsonDoctext.setObject(jsonObjecttext);
-
+    QMessageBox::information(this, "Deletation", "organization has been deleted succefully");
     filetext.open(QIODevice::WriteOnly | QIODevice::Truncate);
     filetext.write(jsonDoctext.toJson());
     filetext.close();
@@ -300,7 +305,7 @@ void org_manager::editOrganizationName(const QString& oldName, const QString& ne
     // Save the changes back to text.json
     jsonObjecttext[loggedInUsername] = user;
     jsonDoctext.setObject(jsonObjecttext);
-
+    QMessageBox::information(this, "Changing organization's name", "organization's name changed successfully");
     filetext.open(QIODevice::WriteOnly | QIODevice::Truncate);
     filetext.write(jsonDoctext.toJson());
     filetext.close();
@@ -396,7 +401,7 @@ void org_manager::addMemberToOrganization(const QString& orgName, const QString&
 
     // Save the changes back to org.json
     QJsonDocument updatedJsonDoc(jsonObject);
-
+    QMessageBox::information(this, "Adding member", "member was added succesfully");
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(updatedJsonDoc.toJson());
     file.close();
@@ -456,7 +461,16 @@ void org_manager::removeMemberFromOrganization(const QString& orgName, const QSt
             membersArray.removeAt(i);
             break;
         }
+    for (int i=0;i<adminsArray.size();++i)
+    {
+        if(adminsArray.at(i).toString()==memberName){
+            adminsArray.removeAt(i);
+            break;
+        }
     }
+
+    }
+    org["admins"]=adminsArray;
     org["members"] = membersArray;
 
     // Save the changes back to org.json
@@ -503,7 +517,7 @@ void org_manager::removeMemberFromOrganization(const QString& orgName, const QSt
 
     // Save the changes back to org.json
     QJsonDocument updatedJsonDoc(jsonObject);
-
+    QMessageBox::information(this, "Removing member", "member has been removed succesfully");
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(updatedJsonDoc.toJson());
     file.close();
@@ -572,7 +586,7 @@ void org_manager::promoteMemberToAdminInOrganization(const QString& orgName, con
 
     // Save the changes back to org.json
     QJsonDocument updatedJsonDoc(jsonObject);
-
+    QMessageBox::information(this, "Promoting member", "Promoting member to admin was succesfull");
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(updatedJsonDoc.toJson());
     file.close();
@@ -648,7 +662,7 @@ void org_manager::demoteAdminToMember(const QString& orgName, const QString& adm
 
     // Save the changes back to org.json
     QJsonDocument updatedJsonDoc(jsonObject);
-
+    QMessageBox::information(this, "Demoting admin", "admin was demoted to member succesfully");
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(updatedJsonDoc.toJson());
     file.close();
