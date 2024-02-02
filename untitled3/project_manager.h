@@ -7,8 +7,8 @@ class Project_manager
 {
 public:
 //    Project_manager();
-    QString get_project();
-    void setproject(const QString &project_name);
+    static QString get_project();
+    static void setproject(const QString &project_name);
     void createproject(const QString& orgName, const QString& projectName);
     void deleteproject(const QString& orgName, const QString& projectName);
     void renameproject(const QString& orgName, const QString& oldprojectName, const QString& newprojectName);

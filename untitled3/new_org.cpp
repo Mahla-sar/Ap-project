@@ -52,12 +52,12 @@ void new_org::on_buttonBox_accepted()
 //    my_project.deleteproject("a2" , "p1");
 //    my_project.updateProjectState("a2" , "p1" , "done");
     Task_manager my_task;
-    my_task.createTask("a1" , "t1" , "AP");
+    //my_task.createTask("a1" , "t1" , "AP");
 //    my_task.deleteTask("a1" , "t1");
     //my_task.unarchiveTask("t1");
     //my_task.isTaskArchived("t2");
-
-    this->close();
+    my_task.assignTaskToTeam("t1" , "team0");
+    //this->close();
 }
 
 

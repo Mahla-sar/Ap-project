@@ -11,6 +11,9 @@ public:
     void archiveTask(const QString& taskName);
     bool isTaskArchived(const QString& taskName);
     void unarchiveTask(const QString& taskName);
+    void assignTaskToMember(const QString& taskName, const QString& memberUsernames) ;
+    void assignTaskToTeam(const QString& taskName, const QString& teamName);
+    void assignTaskToProject(const QString& taskName, const QString& teamName);
 
 
 
