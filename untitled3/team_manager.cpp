@@ -29,10 +29,11 @@ void team_manager::setTeam(const QString &team_name) {
 }
 
 
-void team_manager::createTeam(const QString& orgName, const QString& teamName) {
+void team_manager::createTeam(const QString& orgName,const QString& teamName) {
     // Access org.json
     QString currentDir = QCoreApplication::applicationDirPath();
     QString filePath = currentDir + QDir::separator() + "org.json";
+
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
@@ -42,6 +43,7 @@ void team_manager::createTeam(const QString& orgName, const QString& teamName) {
 
     QByteArray fileData = file.readAll();
     file.close();
+    //QString orgName=org_manager::get_organization();
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
     QJsonObject jsonObject = jsonDoc.object();
@@ -56,17 +58,17 @@ void team_manager::createTeam(const QString& orgName, const QString& teamName) {
 
     // Check if the team already exists
     if (org.contains("teams") && org.value("teams").toArray().contains(teamName)) {
-        qDebug() << "Team already exists in the organization.";
+        QMessageBox::warning(nullptr,"Creat team","Team already exists in the organization.");
         return;
     }
     //
     QString loggedInUsername = UserManager::getLoggedInUsername();
-
+    qDebug()<<loggedInUsername;
     QJsonArray adminsArray = org.value("admins").toArray();
 
     // Check if the logged-in user is an admin of the organization
     if (!adminsArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an admin of the organization.";
+        QMessageBox::warning(nullptr, "creat team", "Logged-in user is not an admin of the organization.");
         //QMessageBox::warning(this, "Add Member", "You are not authorized to add members to this organization.");
         return;
     }
@@ -114,7 +116,7 @@ void team_manager::createTeam(const QString& orgName, const QString& teamName) {
 
     QJsonObject jsonObjectTeam = jsonDocTeam.object();
     if (teamName.isEmpty() || jsonObjectTeam.contains(teamName)) {
-        qDebug() << "Team name is empty or already exists.";
+        QMessageBox::warning(nullptr, "creat team", "Team name is empty or already exists.");
         return;
     }
 
@@ -126,16 +128,16 @@ void team_manager::createTeam(const QString& orgName, const QString& teamName) {
     fileTeam.close();
 
     // Add the new team to the organization
-//    QJsonArray teamsArray = org["teams"].toArray();
-//    teamsArray.append(teamName);
-//    org["teams"] = teamsArray;
+    //    QJsonArray teamsArray = org["teams"].toArray();
+    //    teamsArray.append(teamName);
+    //    org["teams"] = teamsArray;
 
     // Save the changes back to org.json
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(QJsonDocument(jsonObject).toJson());
     file.close();
 
-    qDebug() << "Team created successfully.";
+    QMessageBox::information(nullptr, "creat team", "Team created successfully.");
     QString currentDirtext = QCoreApplication::applicationDirPath();
     QString filePathtext = currentDirtext + QDir::separator() + "text.json";
     QFile filetext(filePathtext);
@@ -187,7 +189,7 @@ void team_manager::renameTeam(const QString& orgName, const QString& oldTeamName
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "Rename team", "Organization does not exist in org.json.");
         return;
     }
 
@@ -196,7 +198,7 @@ void team_manager::renameTeam(const QString& orgName, const QString& oldTeamName
     // Check if the team exists in the organization
     QJsonArray teamsArray = org.value("teams").toArray();
     if (!teamsArray.contains(oldTeamName)) {
-        qDebug() << "Team does not exist in the organization.";
+        QMessageBox::warning(nullptr, "Rename team", "Team does not exist in the organization.");
         return;
     }
 
@@ -204,7 +206,7 @@ void team_manager::renameTeam(const QString& orgName, const QString& oldTeamName
     QString loggedInUsername = UserManager::getLoggedInUsername();
     QJsonArray adminsArray = org.value("admins").toArray();
     if (!adminsArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an admin of the organization.";
+        QMessageBox::warning(nullptr, "Rename team",  "Logged-in user is not an admin of the organization.");
         return;
     }
 
@@ -226,7 +228,7 @@ void team_manager::renameTeam(const QString& orgName, const QString& oldTeamName
 
     // Check if the team exists in Team.json
     if (!jsonObjectTeam.contains(oldTeamName)) {
-        qDebug() << "Team does not exist in Team.json.";
+        QMessageBox::warning(nullptr, "Rename team", "Team does not exist in Team.json.");
         return;
     }
 
@@ -245,7 +247,7 @@ void team_manager::renameTeam(const QString& orgName, const QString& oldTeamName
     fileTeam.close();
 
     // Update the team name in the organization
-//    teamsArray.removeOne(oldTeamName);
+    //    teamsArray.removeOne(oldTeamName);
     for (int i = 0; i < teamsArray.size(); ++i) {
         if (teamsArray.at(i).toString() == oldTeamName) {
             teamsArray[i] = newTeamName;
@@ -254,7 +256,6 @@ void team_manager::renameTeam(const QString& orgName, const QString& oldTeamName
     }
     //teamsArray.append(newTeamName);
     org["teams"] = teamsArray;
-
     // Save the changes back to org.json
     jsonObject[orgName] = org;  // Update the organization object in the main JSON object
 
@@ -279,7 +280,7 @@ void team_manager::renameTeam(const QString& orgName, const QString& oldTeamName
     // Update the team name in the user's team list
     QJsonObject jsonObjecttext = jsonDoctext.object();
     if (!jsonObjecttext.contains(loggedInUsername)) {
-        qDebug() << "User not found in text.json.";
+        QMessageBox::warning(nullptr, "Rename team", "User not found in text.json.");
         return;
     }
 
@@ -287,7 +288,7 @@ void team_manager::renameTeam(const QString& orgName, const QString& oldTeamName
     QJsonValue teamsValue = user.value("teams");
 
     if (!teamsValue.isArray()) {
-        qDebug() << "teams list is not an array for the logged-in user.";
+        QMessageBox::warning(nullptr, "Rename team", "teams list is not an array for the logged-in user.");
         return;
     }
 
@@ -301,7 +302,7 @@ void team_manager::renameTeam(const QString& orgName, const QString& oldTeamName
         }
     }
     user["teams"] = teamArray;
-
+    QMessageBox::information(nullptr, "Rename team", "Team's name has been changed succesfully");
     // Save the changes back to text.json
     jsonObjecttext[loggedInUsername] = user;
     jsonDoctext.setObject(jsonObjecttext);
@@ -312,7 +313,7 @@ void team_manager::renameTeam(const QString& orgName, const QString& oldTeamName
 
 
 
-    qDebug() << "Team name changed successfully.";
+
 }
 
 
@@ -335,35 +336,33 @@ void team_manager::deleteTeam(const QString& orgName, const QString& teamName) {
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "Delete team", "Organization does not exist in org.json.");
         return;
     }
 
     QJsonObject org = jsonObject.value(orgName).toObject();
 
     // Check if the team exists in the organization
-    if (!org.contains("teams") || !org.value("teams").toArray().contains(teamName)) {
-        qDebug() << "Team does not exist in the organization.";
+    QJsonArray teamsArray = org.value("teams").toArray();
+    int indexToRemove = -1;
+
+    for (int i = 0; i < teamsArray.size(); ++i) {
+        if (teamsArray.at(i).toString() == teamName) {
+            indexToRemove = i;
+            break;
+        }
+    }
+
+    if (indexToRemove == -1) {
+        QMessageBox::warning(nullptr, "Delete team",  "Team does not exist in the organization.");
         return;
     }
 
     // Check if the logged-in user is an owner of the team
-    QJsonObject team = jsonObject.value(teamName).toObject();
     QString loggedInUsername = UserManager::getLoggedInUsername();
-    QJsonArray ownerArray = team.value("owner").toArray();
-    if (!ownerArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an owner of the team.";
-        return;
-    }
 
     // Remove the team from the organization
-    QJsonArray teamsArray = org.value("teams").toArray();
-    for (int i = 0; i < teamsArray.size(); ++i) {
-        if (teamsArray.at(i).toString() == teamName) {
-            teamsArray.removeAt(i);
-            break;
-        }
-    }
+    teamsArray.removeAt(indexToRemove);
     org["teams"] = teamsArray;
 
     // Save the changes back to org.json
@@ -389,9 +388,16 @@ void team_manager::deleteTeam(const QString& orgName, const QString& teamName) {
     QJsonDocument jsonDocTeam = QJsonDocument::fromJson(fileDataTeam);
     QJsonObject jsonObjectTeam = jsonDocTeam.object();
 
+    QJsonObject team = jsonObjectTeam.value(teamName).toObject();
+    QString ownerArray = team.value("owner").toString();
+
+    if (!ownerArray.contains(loggedInUsername)) {
+        QMessageBox::warning(nullptr, "Delete team", "Logged-in user is not an owner of the team.");
+        return;
+    }
     // Check if the team exists in Team.json
     if (!jsonObjectTeam.contains(teamName)) {
-        qDebug() << "Team does not exist in Team.json.";
+        QMessageBox::warning(nullptr, "Delete team",  "Team does not exist in Team.json.");
         return;
     }
 
@@ -404,9 +410,10 @@ void team_manager::deleteTeam(const QString& orgName, const QString& teamName) {
     fileTeam.write(jsonDocTeam.toJson());
     fileTeam.close();
 
-    qDebug() << "Team deleted successfully.";
+    QMessageBox::information(nullptr, "Delete team","Team deleted successfully.");
 }
 
+//
 
 void team_manager::addMemberToTeam(const QString& orgName, const QString& teamName, const QString& memberUsername) {
     // Access org.json
@@ -415,7 +422,7 @@ void team_manager::addMemberToTeam(const QString& orgName, const QString& teamNa
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open org.json file.";
+        QMessageBox::warning(nullptr, "Add member", "Failed to open org.json file.");
         return;
     }
 
@@ -424,11 +431,10 @@ void team_manager::addMemberToTeam(const QString& orgName, const QString& teamNa
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
     QJsonObject jsonObject = jsonDoc.object();
-    QString loggedInUsername = UserManager::getLoggedInUsername();
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "Add member", "Organization does not exist in org.json.");
         return;
     }
 
@@ -436,29 +442,29 @@ void team_manager::addMemberToTeam(const QString& orgName, const QString& teamNa
 
     // Check if the team exists in the organization
     if (!org.contains("teams") || !org.value("teams").toArray().contains(teamName)) {
-        qDebug() << "Team does not exist in the organization.";
+        QMessageBox::warning(nullptr, "Add member", "Team does not exist in the organization.");
         return;
     }
 
     // Check if the member is part of the organization
     if (!org.contains("members") || !org.value("members").toArray().contains(memberUsername)) {
-        qDebug() << "Member does not exist in the organization.";
+        QMessageBox::warning(nullptr, "Add member", "Member does not exist in the organization.");
         return;
     }
 
     // Check if the logged-in user is trying to add themselves as a member
+    QString loggedInUsername = UserManager::getLoggedInUsername();
     if (loggedInUsername == memberUsername) {
-        qDebug() << "Cannot add yourself as a member.";
+        QMessageBox::warning(nullptr, "Add member", "Cannot add yourself as a member.");
         return;
     }
 
     // Access Team.json
-    QString currentDirTeam = QCoreApplication::applicationDirPath();
-    QString filePathTeam = currentDirTeam + QDir::separator() + "Team.json";
+    QString filePathTeam = currentDir + QDir::separator() + "Team.json";
 
     QFile fileTeam(filePathTeam);
     if (!fileTeam.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open Team.json file.";
+        QMessageBox::warning(nullptr, "Add member", "Failed to open Team.json file.");
         return;
     }
 
@@ -468,35 +474,25 @@ void team_manager::addMemberToTeam(const QString& orgName, const QString& teamNa
     QJsonDocument jsonDocTeam = QJsonDocument::fromJson(fileDataTeam);
     QJsonObject jsonObjectTeam = jsonDocTeam.object();
 
-//    QJsonObject team = jsonObject.value(teamName).toObject();
-//    QJsonArray headsArray = team.value("heads").toArray();
-//    if (!headsArray.contains(loggedInUsername)) {
-//        qDebug() << "Logged-in user is not an heads of the team.";
-//        return;
-//    }
-
-
-
     // Check if the team exists in Team.json
     if (!jsonObjectTeam.contains(teamName)) {
-        qDebug() << "Team does not exist in Team.json.";
+        QMessageBox::warning(nullptr, "Add member", "Team does not exist in Team.json.");
         return;
     }
 
-    //QJsonObject team = jsonObjectTeam.value(teamName).toObject();
-
     QJsonObject team = jsonObjectTeam.value(teamName).toObject();
 
-     // Check if the logged-in user is a head of the team
-     QJsonArray headsArrayTeam = team.value("heads").toArray();
-     if (!headsArrayTeam.contains(loggedInUsername)) {
-         QMessageBox::warning(nullptr, "Add member","Logged-in user is not a head of the team.");
-         return;
-     }
+    // Check if the logged-in user is a head of the team
+    QJsonArray headsArrayTeam = team.value("heads").toArray();
+    if (!headsArrayTeam.contains(loggedInUsername)) {
+        QMessageBox::warning(nullptr, "Add member","Logged-in user is not a head of the team.");
+        return;
+    }
+
     // Check if the member is already part of the team
     QJsonArray membersArray = team.value("members").toArray();
     if (membersArray.contains(memberUsername)) {
-        qDebug() << "Member is already part of the team.";
+        QMessageBox::warning(nullptr, "Add member","Member is already part of the team.");
         return;
     }
 
@@ -512,39 +508,45 @@ void team_manager::addMemberToTeam(const QString& orgName, const QString& teamNa
     fileTeam.write(jsonDocTeam.toJson());
     fileTeam.close();
 
-    qDebug() << "Member added to the team successfully.";
+    // Update text.json with the new team information for the member
+    QString filePathText = currentDir + QDir::separator() + "text.json";
 
-    QString currentDirtext = QCoreApplication::applicationDirPath();
-    QString filePathtext = currentDirtext + QDir::separator() + "text.json";
-    QFile filetext(filePathtext);
-    if (!filetext.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open file.";
+    QFile fileText(filePathText);
+    if (!fileText.open(QIODevice::ReadWrite)) {
+        QMessageBox::warning(nullptr, "Add member", "Failed to open text.json file.");
         return;
     }
 
-    QByteArray fileDatatext = filetext.readAll();
-    filetext.close();
+    QByteArray fileDataText = fileText.readAll();
+    fileText.close();
 
-    QJsonDocument jsonDoctext = QJsonDocument::fromJson(fileDatatext);
+    QJsonDocument jsonDocText = QJsonDocument::fromJson(fileDataText);
+    QJsonObject jsonObjectText = jsonDocText.object();
 
-    // Adding name to team
-    QJsonObject jsonObjecttext = jsonDoctext.object();
-    QJsonObject user = jsonObjecttext.value(memberUsername).toObject();
+    // Check if the member exists in text.json
+    if (!jsonObjectText.contains(memberUsername)) {
+        QMessageBox::warning(nullptr, "Add member", "Member does not exist in text.json.");
+        return;
+    }
 
-    // Correct the key name to "team"
+    QJsonObject user = jsonObjectText.value(memberUsername).toObject();
+
+    // Update the user's teams information
     QJsonArray teamsArray = user.value("teams").toArray();
     teamsArray.append(teamName);
     user["teams"] = teamsArray;
 
     // Save the changes back to text.json
-    jsonObjecttext[memberUsername] = user;
-    jsonDoctext.setObject(jsonObjecttext);
+    jsonObjectText[memberUsername] = user;
+    jsonDocText.setObject(jsonObjectText);
 
-    // Save the changes back to text.json
-    filetext.open(QIODevice::WriteOnly | QIODevice::Truncate);
-    filetext.write(QJsonDocument(jsonObjecttext).toJson());
-    filetext.close();
+    fileText.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    fileText.write(jsonDocText.toJson());
+    fileText.close();
+
+    QMessageBox::information(nullptr, "Add member", "Member added to the team successfully.");
 }
+
 
 
 void team_manager::removeMemberFromTeam(const QString& orgName, const QString& teamName, const QString& memberUsername) {
@@ -566,23 +568,17 @@ void team_manager::removeMemberFromTeam(const QString& orgName, const QString& t
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "Remove member","Organization does not exist in org.json.");
         return;
     }
 
     QJsonObject org = jsonObject.value(orgName).toObject();
-
-    QJsonObject team = jsonObject.value(teamName).toObject();
     QString loggedInUsername = UserManager::getLoggedInUsername();
-    QJsonArray headsArray = team.value("heads").toArray();
-    if (!headsArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an heads of the team.";
-        return;
-    }
+
 
     // Check if the team exists in the organization
     if (!org.contains("teams") || !org.value("teams").toArray().contains(teamName)) {
-        qDebug() << "Team does not exist in the organization.";
+        QMessageBox::warning(nullptr, "Remove member", "Team does not exist in the organization.");
         return;
     }
 
@@ -604,7 +600,14 @@ void team_manager::removeMemberFromTeam(const QString& orgName, const QString& t
 
     // Check if the team exists in Team.json
     if (!jsonObjectTeam.contains(teamName)) {
-        qDebug() << "Team does not exist in Team.json.";
+        QMessageBox::warning(nullptr, "Remove member","Team does not exist in Team.json.");
+        return;
+    }
+
+    QJsonObject team = jsonObjectTeam.value(teamName).toObject();
+    QJsonArray headsArray = team.value("heads").toArray();
+    if (!headsArray.contains(loggedInUsername)) {
+        QMessageBox::warning(nullptr, "Remove member", "Logged-in user is not an heads of the team.");
         return;
     }
 
@@ -613,17 +616,16 @@ void team_manager::removeMemberFromTeam(const QString& orgName, const QString& t
 
     // Check if the logged-in user is an heads of the team
     if (!headsArrayTeam.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an heads of the team.";
+        QMessageBox::warning(nullptr, "Remove member", "Logged-in user is not an heads of the team.");
         return;
     }
 
     // Check if the member is part of the team
     QJsonArray membersArray = team.value("members").toArray();
     if (!membersArray.contains(memberUsername)) {
-        qDebug() << "Member is not part of the team.";
+        QMessageBox::warning(nullptr, "Remove member", "Member is not part of the team.");
         return;
     }
-
     // Remove the member from the team
     for (int i = 0; i < membersArray.size(); ++i) {
         if (membersArray.at(i).toString() == memberUsername) {
@@ -641,7 +643,7 @@ void team_manager::removeMemberFromTeam(const QString& orgName, const QString& t
     fileTeam.write(jsonDocTeam.toJson());
     fileTeam.close();
 
-    qDebug() << "Member removed from the team successfully.";
+    //QMessageBox::information(this, "Remove member", "Member removed from the team successfully.");
 
     // Access text.json
     QString currentDirtext = QCoreApplication::applicationDirPath();
@@ -661,7 +663,7 @@ void team_manager::removeMemberFromTeam(const QString& orgName, const QString& t
 
     // Check if the member exists in text.json
     if (!jsonObjecttext.contains(memberUsername)) {
-        qDebug() << "Member does not exist in text.json.";
+        QMessageBox::warning(nullptr, "Remove member","Member does not exist in text.json.");
         return;
     }
 
@@ -683,7 +685,7 @@ void team_manager::removeMemberFromTeam(const QString& orgName, const QString& t
     filetext.write(jsonDoctext.toJson());
     filetext.close();
 
-    qDebug() << "Member removed from the team in text.json successfully.";
+    QMessageBox::information(nullptr, "Remove member","Member removed from the team in text.json successfully.");
 }
 
 
@@ -706,7 +708,7 @@ void team_manager::promoteMemberToHeadInTeam(const QString& orgName, const QStri
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "Promot member","Organization does not exist in org.json.");
         return;
     }
 
@@ -715,14 +717,14 @@ void team_manager::promoteMemberToHeadInTeam(const QString& orgName, const QStri
     // Check if the logged-in user is an admin of the organization
     QString loggedInUsername = UserManager::getLoggedInUsername();
     QJsonArray adminsArray = org.value("admins").toArray();
-//    if (!adminsArray.contains(loggedInUsername)) {
-//        qDebug() << "Logged-in user is not an admin of the organization.";
-//        return;
-//    }
+    //    if (!adminsArray.contains(loggedInUsername)) {
+    //        qDebug() << "Logged-in user is not an admin of the organization.";
+    //        return;
+    //    }
 
     // Check if the team exists in the organization
     if (!org.contains("teams") || !org.value("teams").toArray().contains(teamName)) {
-        qDebug() << "Team does not exist in the organization.";
+        QMessageBox::warning(nullptr, "Promot member", "Team does not exist in the organization.");
         return;
     }
 
@@ -744,7 +746,7 @@ void team_manager::promoteMemberToHeadInTeam(const QString& orgName, const QStri
 
     // Check if the team exists in Team.json
     if (!jsonObjectTeam.contains(teamName)) {
-        qDebug() << "Team does not exist in Team.json.";
+        QMessageBox::warning(nullptr, "Promot member", "Team does not exist in Team.json.");
         return;
     }
 
@@ -753,20 +755,20 @@ void team_manager::promoteMemberToHeadInTeam(const QString& orgName, const QStri
 
     // Check if the head is part of the team
     if (!headsArray.contains(loggedInUsername)) {
-        qDebug() << "username is not heed of the team.";
+        QMessageBox::warning(nullptr, "Promot member", "username is not heed of the team.");
         return;
     }
 
     // Check if the member is part of the team
     QJsonArray membersArray = team.value("members").toArray();
     if (!membersArray.contains(memberUsername)) {
-        qDebug() << "Member is not part of the team.";
+        QMessageBox::warning(nullptr, "Promot member","Member is not part of the team.");
         return;
     }
 
     // Check if the member is already a head of the team
     if (headsArray.contains(memberUsername)) {
-        qDebug() << "Member is a head of the team.";
+        QMessageBox::warning(nullptr, "Promot member","Member is a head of the team");
         return;
     }
     // Add the heads to the team
@@ -783,7 +785,7 @@ void team_manager::promoteMemberToHeadInTeam(const QString& orgName, const QStri
     fileTeam.write(jsonDocTeam.toJson());
     fileTeam.close();
 
-    qDebug() << "Member role changed to head in the team successfully.";
+    QMessageBox::information(nullptr, "Promot member","Member role changed to head in the team successfully.");
 
 }
 void team_manager::demoteHeadToMemberInTeam(const QString& orgName, const QString& teamName, const QString& memberUsername) {
@@ -805,7 +807,7 @@ void team_manager::demoteHeadToMemberInTeam(const QString& orgName, const QStrin
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "demote member","Organization does not exist in org.json.");
         return;
     }
 
@@ -816,7 +818,7 @@ void team_manager::demoteHeadToMemberInTeam(const QString& orgName, const QStrin
 
     // Check if the team exists in the organization
     if (!org.contains("teams") || !org.value("teams").toArray().contains(teamName)) {
-        qDebug() << "Team does not exist in the organization.";
+        QMessageBox::warning(nullptr, "demote member", "Team does not exist in the organization.");
         return;
     }
 
@@ -838,41 +840,41 @@ void team_manager::demoteHeadToMemberInTeam(const QString& orgName, const QStrin
 
     // Check if the team exists in Team.json
     if (!jsonObjectTeam.contains(teamName)) {
-        qDebug() << "Team does not exist in Team.json.";
+        QMessageBox::warning(nullptr, "demote member","Team does not exist in Team.json.");
         return;
     }
 
     QJsonObject team = jsonObjectTeam.value(teamName).toObject();
     QJsonArray headsArray = team.value("heads").toArray();
 
-//    QJsonArray ownerArray = team.value("owner").toArray();
-//    if (!ownerArray.contains(loggedInUsername)) {
-//        qDebug() << "Logged-in user is not an owner of the team.";
-//        return;
-//    }
+    //    QJsonArray ownerArray = team.value("owner").toArray();
+    //    if (!ownerArray.contains(loggedInUsername)) {
+    //        qDebug() << "Logged-in user is not an owner of the team.";
+    //        return;
+    //    }
     // Check if the logged-in user is the owner of the organization
     QString ownerUsername = team.value("owner").toString();
 
     if (loggedInUsername != ownerUsername) {
-        qDebug() << "Logged-in user is not the owner of the team.";
+        QMessageBox::warning(nullptr, "demote member", "Logged-in user is not the owner of the team.");
         return;
     }
     // Check if the head is part of the team
     if (!headsArray.contains(loggedInUsername)) {
-        qDebug() << "Username is not a head of the team.";
+        QMessageBox::warning(nullptr, "demote member","Username is not a head of the team.");
         return;
     }
 
     // Check if the member is part of the team
     QJsonArray membersArray = team.value("members").toArray();
     if (!membersArray.contains(memberUsername)) {
-        qDebug() << "Member is not part of the team.";
+        QMessageBox::warning(nullptr, "demote member",  "Member is not part of the team.");
         return;
     }
 
     // Check if the member is a head of the team
     if (!headsArray.contains(memberUsername)) {
-        qDebug() << "Member is not a head of the team.";
+        QMessageBox::warning(nullptr, "demote member","Member is not a head of the team.");
         return;
     }
 
@@ -894,5 +896,5 @@ void team_manager::demoteHeadToMemberInTeam(const QString& orgName, const QStrin
     fileTeam.write(jsonDocTeam.toJson());
     fileTeam.close();
 
-    qDebug() << "Head role demoted to member in the team successfully.";
+    QMessageBox::information(nullptr, "demote member", "Head role demoted to member in the team successfully.");
 }
