@@ -14,6 +14,7 @@ SOURCES += \
     mainwindow.cpp \
     new_org.cpp \
     org_manager.cpp \
+    project_manager.cpp \
     signin.cpp \
     taski.cpp \
     team_manager.cpp \
@@ -24,6 +25,7 @@ HEADERS += \
     mainwindow.h \
     new_org.h \
     org_manager.h \
+    project_manager.h \
     signin.h \
     taski.h \
     team_manager.h \

@@ -95,6 +95,7 @@ void team_manager::createTeam(const QString& orgName, const QString& teamName) {
     QJsonDocument jsonDocTeam = QJsonDocument::fromJson(fileDataTeam);
     QJsonObject Team;
     Team["name"] = teamName;
+    TeamName = teamName;
     Team["members"] = QJsonArray();
     Team["heads"] = QJsonArray();
     Team["organization"] = orgName;  // Set the organization name for the team
