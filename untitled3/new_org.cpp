@@ -51,9 +51,10 @@ void new_org::on_buttonBox_accepted()
     //Project_manager my_project;
 //    my_project.updateProjectState("a2" , "p1" , "done");
     Task_manager my_task;
-    my_task.createTask("l" , "t2");
+    //my_task.createTask("l" , "t2");
 //    my_task.deleteTask("a1" , "t1");
-
+    //my_task.archiveTask("t1");
+    my_task.isTaskArchived("t2");
     this->close();
 }
 

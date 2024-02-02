@@ -176,6 +176,79 @@ void Task_manager::deleteTask(const QString& OrgName, const QString& taskName) {
     qDebug() << "Task deleted successfully and removed from organization tasks.";
 }
 
+bool Task_manager::isTaskArchived(const QString& taskName) {
+    // Access task.json
+    QString currentDir = QCoreApplication::applicationDirPath();
+    QString filePath = currentDir + QDir::separator() + "task.json";
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Failed to open task.json file.";
+        return false;
+    }
+
+    QByteArray fileData = file.readAll();
+    file.close();
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    QJsonObject jsonObject = jsonDoc.object();
+
+    // Check if the task exists
+    if (!jsonObject.contains(taskName)) {
+        qDebug() << "Task does not exist in task.json.";
+        return false;
+    }
+
+    // Check if the task is archived
+    QJsonObject task = jsonObject.value(taskName).toObject();
+    qDebug() << task["Archive"].toBool();
+    return task["Archive"].toBool();
+}
+
+
+void Task_manager::archiveTask(const QString& taskName) {
+    // Access task.json
+    QString currentDir = QCoreApplication::applicationDirPath();
+    QString filePath = currentDir + QDir::separator() + "task.json";
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadWrite)) {
+        qDebug() << "Failed to open task.json file.";
+        return;
+    }
+
+    QByteArray fileData = file.readAll();
+    file.close();
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    QJsonObject jsonObject = jsonDoc.object();
+
+    // Check if the task exists
+    if (!jsonObject.contains(taskName)) {
+        qDebug() << "Task does not exist in task.json.";
+        return;
+    }
+
+    // Check if the task is already archived
+    QJsonObject task = jsonObject.value(taskName).toObject();
+    if (task["Archive"].toBool()) {
+        qDebug() << "Task is already archived.";
+        return;
+    }
+
+    // Archive the task
+    task["Archive"] = true;
+
+    // Save the changes back to task.json
+    jsonObject[taskName] = task;
+    jsonDoc.setObject(jsonObject);
+
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(jsonDoc.toJson());
+    file.close();
+
+    qDebug() << "Task archived successfully.";
+}
 
 
 
