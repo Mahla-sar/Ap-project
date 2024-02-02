@@ -15,7 +15,7 @@ public:
     void removeMemberFromTeam(const QString& orgName, const QString& teamName, const QString& memberUsername);
     void promoteMemberToHeadInTeam(const QString& orgName, const QString& teamName, const QString& membername);
     void demoteHeadToMemberInTeam(const QString& orgName, const QString& teamName, const QString& memberUsername);
-    void setTeam(const QString &team_name) ;
+    static void setTeam(const QString &team_name) ;
 
 private:
     static QString TeamName;

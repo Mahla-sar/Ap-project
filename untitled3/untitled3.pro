@@ -16,6 +16,7 @@ SOURCES += \
     org_manager.cpp \
     project_manager.cpp \
     signin.cpp \
+    task_manager.cpp \
     taski.cpp \
     team_manager.cpp \
     usermanager.cpp
@@ -27,6 +28,7 @@ HEADERS += \
     org_manager.h \
     project_manager.h \
     signin.h \
+    task_manager.h \
     taski.h \
     team_manager.h \
     usermanager.h

@@ -14,6 +14,8 @@
 #include "org_manager.h"
 #include "team_manager.h"
 #include "project_manager.h"
+#include "task_manager.h"
+
 new_org::new_org(QWidget *parent)
     : QDialog(parent),
     ui(new Ui::new_org)
@@ -46,8 +48,10 @@ void new_org::on_buttonBox_accepted()
     //void promoteMemberToHeadTeam(const QString& orgName, const QString& memberName);
     //my_team.renameTeam("a3" , "team2" , "team0");
     //emit add_neworg(name);
-    Project_manager my_project;
-    my_project.updateProjectState("a2" , "p1" , "done");
+    //Project_manager my_project;
+//    my_project.updateProjectState("a2" , "p1" , "done");
+    Task_manager my_task;
+    my_task.createTask("a1" , "t1");
     this->close();
 }
 
