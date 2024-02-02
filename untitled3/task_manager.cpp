@@ -486,8 +486,8 @@ void Task_manager::assignTaskToTeam(const QString& taskName, const QString& team
     fileTeam.write(jsonDocTeam.toJson());
     fileTeam.close();
 
-    QMessageBox::information(nullptr, "Promot member","Member role changed to head in the team successfully.");
-    qDebug() << "Task assigned to team successfully.";
+    QMessageBox::information(nullptr, "","successfully.");
+    qDebug() << "successfully.";
 }
 
 void Task_manager::assignTaskToProject(const QString& taskName, const QString& projectName) {
@@ -535,6 +535,48 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
     file.write(jsonDoc.toJson());
     file.close();
 
+    // Access Project.json
+    QString currentDirProject = QCoreApplication::applicationDirPath();
+    QString filePathProject = currentDirProject + QDir::separator() + "Project.json";
+
+    QFile fileProject(filePathProject);
+    if (!fileProject.open(QIODevice::ReadWrite)) {
+        qDebug() << "Failed to open Project.json file.";
+        return;
+    }
+
+    QByteArray fileDataProject = fileProject.readAll();
+    fileProject.close();
+
+    QJsonDocument jsonDocProject = QJsonDocument::fromJson(fileDataProject);
+    QJsonObject jsonObjectProject = jsonDocProject.object();
+
+
+
+    QJsonObject Project = jsonObjectProject.value(projectName).toObject();
+    QJsonArray tasksArray = Project.value("tasks").toArray();
+
+
+
+    // Check if the member is already a head of the Project
+    if (tasksArray.contains(taskName)) {
+        QMessageBox::warning(nullptr, " ","Project is already in task");
+        return;
+    }
+    // Add the heads to the Project
+    tasksArray.append(taskName);
+    Project["tasks"] = tasksArray;
+
+    // Save the changes back to Project.json
+    jsonObjectProject[projectName] = Project;
+    jsonDocProject.setObject(jsonObjectProject);
+
+    fileProject.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    fileProject.write(jsonDocProject.toJson());
+    fileProject.close();
+
+    QMessageBox::information(nullptr, "","successfully.");
+    qDebug() << "successfully.";
     qDebug() << "Task assigned to project successfully.";
 }
 
