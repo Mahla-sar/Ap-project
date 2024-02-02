@@ -101,6 +101,80 @@ void Task_manager::createTask(const QString& OrgName, const QString& taskName) {
 
 
 
+void Task_manager::deleteTask(const QString& OrgName, const QString& taskName) {
+    // Access task.json
+    QString currentDir = QCoreApplication::applicationDirPath();
+    QString filePath = currentDir + QDir::separator() + "task.json";
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadWrite)) {
+        qDebug() << "Failed to open task.json file.";
+        return;
+    }
+
+    QByteArray fileData = file.readAll();
+    file.close();
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    QJsonObject jsonObject = jsonDoc.object();
+
+    // Check if the task exists
+    if (!jsonObject.contains(taskName)) {
+        qDebug() << "Task does not exist in task.json.";
+        return;
+    }
+
+    // Remove task from task.json
+    jsonObject.remove(taskName);
+    jsonDoc.setObject(jsonObject);
+
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(jsonDoc.toJson());
+    file.close();
+
+    // Access org.json
+    QString orgFilePath = currentDir + QDir::separator() + "org.json";
+
+    QFile orgFile(orgFilePath);
+    if (!orgFile.open(QIODevice::ReadWrite)) {
+        qDebug() << "Failed to open org.json file.";
+        return;
+    }
+
+    QByteArray orgFileData = orgFile.readAll();
+    orgFile.close();
+
+    QJsonDocument orgJsonDoc = QJsonDocument::fromJson(orgFileData);
+    QJsonObject orgJsonObject = orgJsonDoc.object();
+
+    // Check if the organization exists
+    if (!orgJsonObject.contains(OrgName)) {
+        qDebug() << "Organization does not exist in org.json.";
+        return;
+    }
+
+    // Remove task name from tasks in the organization
+    QJsonObject org = orgJsonObject.value(OrgName).toObject();
+    QJsonArray tasksArray = org.value("tasks").toArray();
+//    tasksArray.removeOne(taskName);
+    for (int i = 0; i < tasksArray.size(); ++i) {
+        if (tasksArray.at(i).toString() == taskName) {
+            tasksArray.removeAt(i);
+            break;
+        }
+    }
+    org["tasks"] = tasksArray;
+
+    // Save the changes back to org.json
+    orgJsonObject[OrgName] = org;
+    orgJsonDoc.setObject(orgJsonObject);
+
+    orgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    orgFile.write(orgJsonDoc.toJson());
+    orgFile.close();
+
+    qDebug() << "Task deleted successfully and removed from organization tasks.";
+}
 
 
 

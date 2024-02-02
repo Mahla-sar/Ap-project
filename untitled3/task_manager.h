@@ -7,6 +7,7 @@ class Task_manager
 {
 public:
     void createTask(const QString& OrgName, const QString& taskName);
+    void deleteTask(const QString& OrgName, const QString& taskName);
 
 
 
