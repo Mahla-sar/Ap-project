@@ -48,14 +48,15 @@ void new_org::on_buttonBox_accepted()
     //void promoteMemberToHeadTeam(const QString& orgName, const QString& memberName);
     //my_team.renameTeam("a3" , "team2" , "team0");
     //emit add_neworg(name);
-    Project_manager my_project;
-    my_project.deleteproject("a2" , "p1");
+//    Project_manager my_project;
+//    my_project.deleteproject("a2" , "p1");
 //    my_project.updateProjectState("a2" , "p1" , "done");
     Task_manager my_task;
-    //my_task.createTask("l" , "t2");
+    my_task.createTask("a1" , "t1" , "AP");
 //    my_task.deleteTask("a1" , "t1");
     //my_task.unarchiveTask("t1");
     //my_task.isTaskArchived("t2");
+
     this->close();
 }
 

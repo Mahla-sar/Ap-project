@@ -16,7 +16,7 @@
 #include "org_manager.h"
 #include "project_manager.h"
 
-void Task_manager::createTask(const QString& OrgName, const QString& taskName) {
+void Task_manager::createTask(const QString& OrgName, const QString& taskName , const QString& description) {
         // Access task.json
         QString currentDir = QCoreApplication::applicationDirPath();
         QString filePath = currentDir + QDir::separator() + "task.json";
@@ -42,10 +42,10 @@ void Task_manager::createTask(const QString& OrgName, const QString& taskName) {
         // Create task object
         QJsonObject task;
         task["name"] = taskName;
-        task["description"] = "";
+        task["description"] = description;
         task["assignee Team"] = "";
         task["assignee Project"] = "";
-        task["assignee Member"] = "";
+        task["assignee Member"] = QJsonArray();
         task["Archive"] = bool(false);
         task["organization"] = OrgName;
         QString loggedInUsername = UserManager::getLoggedInUsername();
