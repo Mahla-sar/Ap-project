@@ -344,13 +344,7 @@ void Project_manager::deleteproject(const QString& orgName, const QString& proje
     }
 
     // Check if the logged-in user is an owner of the project
-    QJsonObject project = jsonObject.value(projectName).toObject();
     QString loggedInUsername = UserManager::getLoggedInUsername();
-    QJsonArray ownerArray = project.value("owner").toArray();
-    if (!ownerArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an owner of the project.";
-        return;
-    }
 
     // Remove the project from the organization
     QJsonArray projectsArray = org.value("projects").toArray();
@@ -390,7 +384,13 @@ void Project_manager::deleteproject(const QString& orgName, const QString& proje
         qDebug() << "project does not exist in project.json.";
         return;
     }
+    QJsonObject project = jsonObjectproject.value(projectName).toObject();
 
+    QString ownerstr = project.value("owner").toString();
+    if (!ownerstr.contains(loggedInUsername)) {
+        qDebug() << "Logged-in user is not an owner of the project.";
+        return;
+    }
     // Remove the project from project.json
     jsonObjectproject.remove(projectName);
 
@@ -429,13 +429,13 @@ void Project_manager::addMemberToproject(const QString& orgName, const QString& 
 
     QJsonObject org = jsonObject.value(orgName).toObject();
 
-    QJsonObject project = jsonObject.value(projectName).toObject();
     QString loggedInUsername = UserManager::getLoggedInUsername();
-    QJsonArray headsArray = project.value("heads").toArray();
-    if (!headsArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an heads of the project.";
-        return;
-    }
+//    QJsonArray headsArray = project.value("heads").toArray();
+//    if (!headsArray.contains(loggedInUsername)) {
+//        qDebug() << "Logged-in user is not an heads of the project.";
+//        return;
+//    }
+
 
     // Check if the project exists in the organization
     if (!org.contains("projects") || !org.value("projects").toArray().contains(projectName)) {
@@ -476,13 +476,12 @@ void Project_manager::addMemberToproject(const QString& orgName, const QString& 
         qDebug() << "project does not exist in project.json.";
         return;
     }
+    //QJsonObject project = jsonObject.value(projectName).toObject();
+    QJsonObject project = jsonObjectproject.value(projectName).toObject();
 
-    //QJsonObject project = jsonObjectproject.value(projectName).toObject();
-    QJsonArray headsArrayproject = project.value("headss").toArray();
-
-    // Check if the logged-in user is an heads of the project
-    if (!headsArrayproject.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an heads of the project.";
+    QJsonArray headsArrayTeam = project.value("heads").toArray();
+    if (!headsArrayTeam.contains(loggedInUsername)) {
+        QMessageBox::warning(nullptr, "Add member","Logged-in user is not a head of the team.");
         return;
     }
 
@@ -565,13 +564,6 @@ void Project_manager::removeMemberFromproject(const QString& orgName, const QStr
 
     QJsonObject org = jsonObject.value(orgName).toObject();
 
-    QJsonObject project = jsonObject.value(projectName).toObject();
-    QString loggedInUsername = UserManager::getLoggedInUsername();
-    QJsonArray headsArray = project.value("heads").toArray();
-    if (!headsArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an heads of the project.";
-        return;
-    }
 
     // Check if the project exists in the organization
     if (!org.contains("projects") || !org.value("projects").toArray().contains(projectName)) {
@@ -602,10 +594,19 @@ void Project_manager::removeMemberFromproject(const QString& orgName, const QStr
     }
 
     //QJsonObject project = jsonObjectproject.value(projectName).toObject();
-    QJsonArray headsArrayproject = project.value("heads").toArray();
+//    QJsonArray headsArrayproject = project.value("heads").toArray();
 
-    // Check if the logged-in user is an heads of the project
-    if (!headsArrayproject.contains(loggedInUsername)) {
+//    // Check if the logged-in user is an heads of the project
+//    if (!headsArrayproject.contains(loggedInUsername)) {
+//        qDebug() << "Logged-in user is not an heads of the project.";
+//        return;
+//    }
+    QJsonObject project = jsonObjectproject.value(projectName).toObject();
+
+    //QJsonObject project = jsonObject.value(projectName).toObject();
+    QString loggedInUsername = UserManager::getLoggedInUsername();
+    QJsonArray headsArray = project.value("heads").toArray();
+    if (!headsArray.contains(loggedInUsername)) {
         qDebug() << "Logged-in user is not an heads of the project.";
         return;
     }
