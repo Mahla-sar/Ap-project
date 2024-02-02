@@ -424,6 +424,7 @@ void team_manager::addMemberToTeam(const QString& orgName, const QString& teamNa
 
     QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
     QJsonObject jsonObject = jsonDoc.object();
+    QString loggedInUsername = UserManager::getLoggedInUsername();
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
@@ -432,14 +433,6 @@ void team_manager::addMemberToTeam(const QString& orgName, const QString& teamNa
     }
 
     QJsonObject org = jsonObject.value(orgName).toObject();
-
-    QJsonObject team = jsonObject.value(teamName).toObject();
-    QString loggedInUsername = UserManager::getLoggedInUsername();
-    QJsonArray headsArray = team.value("heads").toArray();
-    if (!headsArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an heads of the team.";
-        return;
-    }
 
     // Check if the team exists in the organization
     if (!org.contains("teams") || !org.value("teams").toArray().contains(teamName)) {
@@ -475,6 +468,15 @@ void team_manager::addMemberToTeam(const QString& orgName, const QString& teamNa
     QJsonDocument jsonDocTeam = QJsonDocument::fromJson(fileDataTeam);
     QJsonObject jsonObjectTeam = jsonDocTeam.object();
 
+//    QJsonObject team = jsonObject.value(teamName).toObject();
+//    QJsonArray headsArray = team.value("heads").toArray();
+//    if (!headsArray.contains(loggedInUsername)) {
+//        qDebug() << "Logged-in user is not an heads of the team.";
+//        return;
+//    }
+
+
+
     // Check if the team exists in Team.json
     if (!jsonObjectTeam.contains(teamName)) {
         qDebug() << "Team does not exist in Team.json.";
@@ -482,14 +484,15 @@ void team_manager::addMemberToTeam(const QString& orgName, const QString& teamNa
     }
 
     //QJsonObject team = jsonObjectTeam.value(teamName).toObject();
-    QJsonArray headsArrayTeam = team.value("headss").toArray();
 
-    // Check if the logged-in user is an heads of the team
-    if (!headsArrayTeam.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an heads of the team.";
-        return;
-    }
+    QJsonObject team = jsonObjectTeam.value(teamName).toObject();
 
+     // Check if the logged-in user is a head of the team
+     QJsonArray headsArrayTeam = team.value("heads").toArray();
+     if (!headsArrayTeam.contains(loggedInUsername)) {
+         QMessageBox::warning(nullptr, "Add member","Logged-in user is not a head of the team.");
+         return;
+     }
     // Check if the member is already part of the team
     QJsonArray membersArray = team.value("members").toArray();
     if (membersArray.contains(memberUsername)) {

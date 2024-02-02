@@ -42,7 +42,7 @@ void new_org::on_buttonBox_accepted()
     //my_org.editOrganizationName(name, "new_name_test");
     team_manager my_team;
     //my_team.deleteTeam("b_org1" , "team3");
-    //my_team.addMemberToTeam("a3", "team2", "b");
+    my_team.addMemberToTeam("a3", "team0", "b");
     //my_team.removeMemberFromTeam("a3", "team2", "b");
     //my_team.demoteHeadToMemberInTeam("b_org1", "team3" , "a");
     //void promoteMemberToHeadTeam(const QString& orgName, const QString& memberName);
@@ -53,8 +53,8 @@ void new_org::on_buttonBox_accepted()
     Task_manager my_task;
     //my_task.createTask("l" , "t2");
 //    my_task.deleteTask("a1" , "t1");
-    //my_task.archiveTask("t1");
-    my_task.isTaskArchived("t2");
+    //my_task.unarchiveTask("t1");
+    //my_task.isTaskArchived("t2");
     this->close();
 }
 

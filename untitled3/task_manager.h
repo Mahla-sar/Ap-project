@@ -10,6 +10,7 @@ public:
     void deleteTask(const QString& OrgName, const QString& taskName);
     void archiveTask(const QString& taskName);
     bool isTaskArchived(const QString& taskName);
+    void unarchiveTask(const QString& taskName);
 
 
 

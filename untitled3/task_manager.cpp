@@ -250,6 +250,49 @@ void Task_manager::archiveTask(const QString& taskName) {
     qDebug() << "Task archived successfully.";
 }
 
+void Task_manager::unarchiveTask(const QString& taskName) {
+    // Access task.json
+    QString currentDir = QCoreApplication::applicationDirPath();
+    QString filePath = currentDir + QDir::separator() + "task.json";
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadWrite)) {
+        qDebug() << "Failed to open task.json file.";
+        return;
+    }
+
+    QByteArray fileData = file.readAll();
+    file.close();
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    QJsonObject jsonObject = jsonDoc.object();
+
+    // Check if the task exists
+    if (!jsonObject.contains(taskName)) {
+        qDebug() << "Task does not exist in task.json.";
+        return;
+    }
+
+    // Check if the task is already unarchived
+    QJsonObject task = jsonObject.value(taskName).toObject();
+    if (!task["Archive"].toBool()) {
+        qDebug() << "Task is not archived.";
+        return;
+    }
+
+    // Unarchive the task
+    task["Archive"] = false;
+
+    // Save the changes back to task.json
+    jsonObject[taskName] = task;
+    jsonDoc.setObject(jsonObject);
+
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(jsonDoc.toJson());
+    file.close();
+
+    qDebug() << "Task unarchived successfully.";
+}
 
 
 
