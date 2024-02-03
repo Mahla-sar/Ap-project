@@ -17,87 +17,126 @@
 #include "project_manager.h"
 #include "team_manager.h"
 
+
+QString Task_manager::TaskName ;
+QString Task_manager::get_task()
+{
+    return TaskName;
+}
+
+void Task_manager::settask(const QString &task_name)
+{
+    TaskName=task_name;
+}
+QString Task_manager::getDueDate(const QString &taskName)
+{
+    QString currentDir = QCoreApplication::applicationDirPath();
+    QString filePath = currentDir + QDir::separator() + "task.json";
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadWrite)) {
+        QMessageBox::warning(nullptr, "getDueDate", "Failed to open task.json file.");
+    }
+
+    QByteArray fileData = file.readAll();
+    file.close();
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    QJsonObject jsonObject = jsonDoc.object();
+
+    // Retrieve due date from the JSON object
+    QJsonObject taskData = jsonDoc.object();
+    if (taskData.contains(taskName))
+    {
+        return taskData["dueDate"].toString();
+    }
+
+    return QString(); // Return an empty string if task name not found
+}
+
 void Task_manager::createTask(const QString& OrgName, const QString& taskName , const QString& description) {
-        // Access task.json
-        QString currentDir = QCoreApplication::applicationDirPath();
-        QString filePath = currentDir + QDir::separator() + "task.json";
+    // Access task.json
+    QString currentDir = QCoreApplication::applicationDirPath();
+    QString filePath = currentDir + QDir::separator() + "task.json";
 
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadWrite)) {
-            qDebug() << "Failed to open task.json file.";
-            return;
-        }
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadWrite)) {
+        QMessageBox::warning(nullptr, "createTask", "Failed to open task.json file.");
+        return;
+    }
 
-        QByteArray fileData = file.readAll();
-        file.close();
+    QByteArray fileData = file.readAll();
+    file.close();
 
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
-        QJsonObject jsonObject = jsonDoc.object();
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    QJsonObject jsonObject = jsonDoc.object();
 
-        // Check if the task already exists
-        if (jsonObject.contains(taskName)) {
-            qDebug() << "Task already exists in task.json.";
-            return;
-        }
+    // Check if the task already exists
+    if (jsonObject.contains(taskName)) {
+        QMessageBox::warning(nullptr, "getDueDate", "Task already exists in task.json.");
+        return;
+    }
 
-        // Create task object
-        QJsonObject task;
-        task["name"] = taskName;
-        task["description"] = description;
-        task["assignee Team"] = "";
-        task["assignee Project"] = "";
-        task["assignee Member"] = QJsonArray();
-        task["Archive"] = bool(false);
-        task["organization"] = OrgName;
-        QString loggedInUsername = UserManager::getLoggedInUsername();
-        task["owner"] = loggedInUsername;
-        task["DueDate"] = "";
-        // Add the task to task.json
-        jsonObject[taskName] = task;
-        jsonDoc.setObject(jsonObject);
+    // Create task object
+    QJsonObject task;
+    task["name"] = taskName;
+    task["description"] = description;
+    task["assignee Team"] = "";
+    task["assignee Project"] = "";
+    task["assignee Member"] = QJsonArray();
+    task["Archive"] = bool(false);
+    task["organization"] = OrgName;
+    QString loggedInUsername = UserManager::getLoggedInUsername();
+    task["owner"] = loggedInUsername;
+    task["DueDate"] = "";
+    // Add the task to task.json
+    jsonObject[taskName] = task;
+    jsonDoc.setObject(jsonObject);
 
-        file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-        file.write(jsonDoc.toJson());
-        file.close();
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(jsonDoc.toJson());
+    file.close();
 
-        // Access org.json
-        QString orgFilePath = currentDir + QDir::separator() + "org.json";
+    // Access org.json
+    QString orgFilePath = currentDir + QDir::separator() + "org.json";
 
-        QFile orgFile(orgFilePath);
-        if (!orgFile.open(QIODevice::ReadWrite)) {
-            qDebug() << "Failed to open org.json file.";
-            return;
-        }
+    QFile orgFile(orgFilePath);
+    if (!orgFile.open(QIODevice::ReadWrite)) {
+        QMessageBox::warning(nullptr, "createTask", "Failed to open org.json file.");
 
-        QByteArray orgFileData = orgFile.readAll();
-        orgFile.close();
+        return;
+    }
 
-        QJsonDocument orgJsonDoc = QJsonDocument::fromJson(orgFileData);
-        QJsonObject orgJsonObject = orgJsonDoc.object();
+    QByteArray orgFileData = orgFile.readAll();
+    orgFile.close();
 
-        // Check if the organization exists
-        if (!orgJsonObject.contains(OrgName)) {
-            qDebug() << "Organization does not exist in org.json.";
-            return;
-        }
+    QJsonDocument orgJsonDoc = QJsonDocument::fromJson(orgFileData);
+    QJsonObject orgJsonObject = orgJsonDoc.object();
 
-        // Add task name to tasks in the organization
-        QJsonObject org = orgJsonObject.value(OrgName).toObject();
-        QJsonArray tasksArray = org.value("tasks").toArray();
-        tasksArray.append(taskName);
-        org["tasks"] = tasksArray;
+    // Check if the organization exists
+    if (!orgJsonObject.contains(OrgName)) {
+        QMessageBox::warning(nullptr, "createTask", "Organization does not exist in org.json.");
 
-        // Save the changes back to org.json
-        orgJsonObject[OrgName] = org;
-        orgJsonDoc.setObject(orgJsonObject);
+        return;
+    }
 
-        orgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
-        orgFile.write(orgJsonDoc.toJson());
-        orgFile.close();
+    // Add task name to tasks in the organization
+    QJsonObject org = orgJsonObject.value(OrgName).toObject();
+    QJsonArray tasksArray = org.value("tasks").toArray();
+    tasksArray.append(taskName);
+    org["tasks"] = tasksArray;
+
+    // Save the changes back to org.json
+    orgJsonObject[OrgName] = org;
+    orgJsonDoc.setObject(orgJsonObject);
+
+    orgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    orgFile.write(orgJsonDoc.toJson());
+    orgFile.close();
 
 
+    QMessageBox::warning(nullptr, "createTask", "Task created successfully.");
 
-        qDebug() << "Task created successfully.";
 }
 
 
@@ -109,7 +148,9 @@ void Task_manager::deleteTask(const QString& OrgName, const QString& taskName) {
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open task.json file.";
+        QMessageBox::warning(nullptr, "delete Task", "Failed to open task.json file.");
+
+
         return;
     }
 
@@ -121,7 +162,7 @@ void Task_manager::deleteTask(const QString& OrgName, const QString& taskName) {
 
     // Check if the task exists
     if (!jsonObject.contains(taskName)) {
-        qDebug() << "Task does not exist in task.json.";
+        QMessageBox::warning(nullptr, "delete Task", "Task does not exist in task.json.");
         return;
     }
 
@@ -138,7 +179,7 @@ void Task_manager::deleteTask(const QString& OrgName, const QString& taskName) {
 
     QFile orgFile(orgFilePath);
     if (!orgFile.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open org.json file.";
+        QMessageBox::warning(nullptr, "delete Task", "Failed to open org.json file.");
         return;
     }
 
@@ -150,14 +191,14 @@ void Task_manager::deleteTask(const QString& OrgName, const QString& taskName) {
 
     // Check if the organization exists
     if (!orgJsonObject.contains(OrgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "delete Task", "Organization does not exist in org.json.");
         return;
     }
 
     // Remove task name from tasks in the organization
     QJsonObject org = orgJsonObject.value(OrgName).toObject();
     QJsonArray tasksArray = org.value("tasks").toArray();
-//    tasksArray.removeOne(taskName);
+    //    tasksArray.removeOne(taskName);
     for (int i = 0; i < tasksArray.size(); ++i) {
         if (tasksArray.at(i).toString() == taskName) {
             tasksArray.removeAt(i);
@@ -173,8 +214,8 @@ void Task_manager::deleteTask(const QString& OrgName, const QString& taskName) {
     orgFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
     orgFile.write(orgJsonDoc.toJson());
     orgFile.close();
+    QMessageBox::warning(nullptr, "delete Task", "Task deleted successfully and removed from organization tasks.");
 
-    qDebug() << "Task deleted successfully and removed from organization tasks.";
 }
 
 bool Task_manager::isTaskArchived(const QString& taskName) {
@@ -184,7 +225,7 @@ bool Task_manager::isTaskArchived(const QString& taskName) {
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Failed to open task.json file.";
+        QMessageBox::warning(nullptr, "is Task Archived", "Failed to open task.json file.");
         return false;
     }
 
@@ -196,7 +237,7 @@ bool Task_manager::isTaskArchived(const QString& taskName) {
 
     // Check if the task exists
     if (!jsonObject.contains(taskName)) {
-        qDebug() << "Task does not exist in task.json.";
+        QMessageBox::warning(nullptr, "is Task Archived", "Task does not exist in task.json.");
         return false;
     }
 
@@ -214,7 +255,7 @@ void Task_manager::archiveTask(const QString& taskName) {
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open task.json file.";
+        QMessageBox::warning(nullptr, "archiveTask", "Failed to open task.json file.");
         return;
     }
 
@@ -226,14 +267,14 @@ void Task_manager::archiveTask(const QString& taskName) {
 
     // Check if the task exists
     if (!jsonObject.contains(taskName)) {
-        qDebug() << "Task does not exist in task.json.";
+        QMessageBox::warning(nullptr, "archiveTask", "Task does not exist in task.json.");
         return;
     }
 
     // Check if the task is already archived
     QJsonObject task = jsonObject.value(taskName).toObject();
     if (task["Archive"].toBool()) {
-        qDebug() << "Task is already archived.";
+        QMessageBox::warning(nullptr, "archiveTask", "Task is already archived.");
         return;
     }
 
@@ -247,8 +288,8 @@ void Task_manager::archiveTask(const QString& taskName) {
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(jsonDoc.toJson());
     file.close();
+    QMessageBox::warning(nullptr, "archiveTask", "Task archived successfully.");
 
-    qDebug() << "Task archived successfully.";
 }
 
 void Task_manager::unarchiveTask(const QString& taskName) {
@@ -258,7 +299,8 @@ void Task_manager::unarchiveTask(const QString& taskName) {
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open task.json file.";
+        QMessageBox::warning(nullptr, "unarchiveTask", "Failed to open task.json file.");
+
         return;
     }
 
@@ -270,14 +312,15 @@ void Task_manager::unarchiveTask(const QString& taskName) {
 
     // Check if the task exists
     if (!jsonObject.contains(taskName)) {
-        qDebug() << "Task does not exist in task.json.";
+        QMessageBox::warning(nullptr, "unarchiveTask", "Task does not exist in task.json.");
+
         return;
     }
 
     // Check if the task is already unarchived
     QJsonObject task = jsonObject.value(taskName).toObject();
     if (!task["Archive"].toBool()) {
-        qDebug() << "Task is not archived.";
+        QMessageBox::warning(nullptr, "unarchiveTask", "Task is not archived.");
         return;
     }
 
@@ -291,8 +334,8 @@ void Task_manager::unarchiveTask(const QString& taskName) {
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(jsonDoc.toJson());
     file.close();
+    QMessageBox::warning(nullptr, "unarchiveTask", "Task unarchived successfully.");
 
-    qDebug() << "Task unarchived successfully.";
 }
 
 
@@ -304,7 +347,8 @@ void Task_manager::assignTaskToMember(const QString& taskName, const QString& me
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open task.json file.";
+        QMessageBox::warning(nullptr, "assign Task To Member", "Failed to open task.json file.");
+
         return;
     }
 
@@ -316,7 +360,8 @@ void Task_manager::assignTaskToMember(const QString& taskName, const QString& me
 
     // Check if the task exists
     if (!jsonObject.contains(taskName)) {
-        qDebug() << "Task does not exist in task.json.";
+        QMessageBox::warning(nullptr, "assign Task To Member", "Task does not exist in task.json.");
+
         return;
     }
 
@@ -331,6 +376,31 @@ void Task_manager::assignTaskToMember(const QString& taskName, const QString& me
         return;
     }
 
+    QString usersFilePath = currentDir + QDir::separator() + "text.json";
+    QFile usersFile(usersFilePath);
+    if (!usersFile.open(QIODevice::ReadWrite)) {
+        QMessageBox::warning(nullptr, "assign Task To Member", "Failed to open task.json file.");
+
+        return;
+    }
+
+    QByteArray usersFileData = usersFile.readAll();
+    usersFile.close();
+
+    QJsonDocument usersJsonDoc = QJsonDocument::fromJson(usersFileData);
+    QJsonObject usersJsonObject = usersJsonDoc.object();
+
+    if (!usersJsonObject.contains(memberUsername)) {
+        QMessageBox::warning(nullptr, "Add Member", "User does not exist.");
+        return;
+    }
+
+    QJsonObject user = usersJsonObject.value(memberUsername).toObject();
+    QJsonArray tasksArray = user.value("tasks").toArray();
+    if (tasksArray.contains(taskName)){
+        QMessageBox::warning(nullptr, "assign Task To Member", "Member is already part of the task.");
+
+        return;}
     // Assign the task to the specified member
     QJsonArray membersArray = task["assignee Member"].toArray();
 
@@ -352,30 +422,6 @@ void Task_manager::assignTaskToMember(const QString& taskName, const QString& me
 
 
 
-    QString usersFilePath = currentDir + QDir::separator() + "text.json";
-    QFile usersFile(usersFilePath);
-    if (!usersFile.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open text.json file.";
-        return;
-    }
-
-    QByteArray usersFileData = usersFile.readAll();
-    usersFile.close();
-
-    QJsonDocument usersJsonDoc = QJsonDocument::fromJson(usersFileData);
-    QJsonObject usersJsonObject = usersJsonDoc.object();
-
-    if (!usersJsonObject.contains(memberUsername)) {
-        qDebug() << "User does not exist in users.json.";
-        //QMessageBox::warning(this, "Add Member", "User does not exist.");
-        return;
-    }
-
-    QJsonObject user = usersJsonObject.value(memberUsername).toObject();
-    QJsonArray tasksArray = user.value("tasks").toArray();
-    if (tasksArray.contains(taskName)){
-        qDebug() << "Member is already part of the task";
-        return;}
 
     tasksArray.append(taskName);
     user["tasks"] = tasksArray;
@@ -390,11 +436,12 @@ void Task_manager::assignTaskToMember(const QString& taskName, const QString& me
 
     // Save the changes back to text.json
     QJsonDocument updatedJsonDoc(jsonObject);
-//    QMessageBox::information(this, "Adding member", "member was added succesfully");
+    //    QMessageBox::information(this, "Adding member", "member was added succesfully");
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(updatedJsonDoc.toJson());
     file.close();
-    qDebug() << "Task assigned to member successfully.";
+    QMessageBox::warning(nullptr, "assign Task To Member", "Task assigned to member successfully.");
+
 
 }
 
@@ -406,7 +453,8 @@ void Task_manager::assignTaskToTeam(const QString& taskName, const QString& team
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open task.json file.";
+        QMessageBox::warning(nullptr, "assign Task To Team", "Failed to open task.json file.");
+
         return;
     }
 
@@ -418,7 +466,8 @@ void Task_manager::assignTaskToTeam(const QString& taskName, const QString& team
 
     // Check if the task exists
     if (!jsonObject.contains(taskName)) {
-        qDebug() << "Task does not exist in task.json.";
+        QMessageBox::warning(nullptr, "assign Task To Team", "Task does not exist in task.json.");
+
         return;
     }
 
@@ -432,24 +481,14 @@ void Task_manager::assignTaskToTeam(const QString& taskName, const QString& team
         QMessageBox::warning(nullptr, "assign task to team", "Logged-in user is not the owner of the task.");
         return;
     }
-
-    // Assign the task to the specified team
-    task["assignee Team"] = teamName;
-
-    // Save the changes back to task.json
-    jsonObject[taskName] = task;
-    jsonDoc.setObject(jsonObject);
-
-    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-    file.write(jsonDoc.toJson());
-    file.close();
     // Access Team.json
     QString currentDirTeam = QCoreApplication::applicationDirPath();
     QString filePathTeam = currentDirTeam + QDir::separator() + "Team.json";
 
     QFile fileTeam(filePathTeam);
     if (!fileTeam.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open Team.json file.";
+        QMessageBox::warning(nullptr, "assign Task To Team", "Failed to open team.json file.");
+
         return;
     }
 
@@ -461,7 +500,7 @@ void Task_manager::assignTaskToTeam(const QString& taskName, const QString& team
 
     // Check if the team exists in Team.json
     if (!jsonObjectTeam.contains(teamName)) {
-        QMessageBox::warning(nullptr, "Promot member", "Team does not exist in Team.json.");
+        QMessageBox::warning(nullptr, "assign Task To Team", "Team does not exist in Team.json.");
         return;
     }
 
@@ -472,9 +511,20 @@ void Task_manager::assignTaskToTeam(const QString& taskName, const QString& team
 
     // Check if the member is already a head of the team
     if (tasksArray.contains(taskName)) {
-        QMessageBox::warning(nullptr, " ","Team is already in task");
+        QMessageBox::warning(nullptr, "assign Task To Team","Team is already in task");
         return;
     }
+
+    // Assign the task to the specified team
+    task["assignee Team"] = teamName;
+
+    // Save the changes back to task.json
+    jsonObject[taskName] = task;
+    jsonDoc.setObject(jsonObject);
+
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(jsonDoc.toJson());
+    file.close();
     // Add the heads to the team
     tasksArray.append(taskName);
     team["tasks"] = tasksArray;
@@ -487,8 +537,7 @@ void Task_manager::assignTaskToTeam(const QString& taskName, const QString& team
     fileTeam.write(jsonDocTeam.toJson());
     fileTeam.close();
 
-    QMessageBox::information(nullptr, "","successfully.");
-    qDebug() << "successfully.";
+    QMessageBox::warning(nullptr, "assign Task To Team", "Task assigned to team successfully.");
 }
 
 void Task_manager::assignTaskToProject(const QString& taskName, const QString& projectName) {
@@ -498,7 +547,8 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open task.json file.";
+        QMessageBox::warning(nullptr, "assign Task To Project", "Failed to open task.json file.");
+
         return;
     }
 
@@ -510,31 +560,10 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
     // Check if the task exists
     if (!jsonObject.contains(taskName)) {
-        qDebug() << "Task does not exist in task.json.";
+        QMessageBox::warning(nullptr, "assign Task To Project", "Task does not exist in task.json.");
+
         return;
     }
-
-    // Retrieve the task object
-    QJsonObject task = jsonObject.value(taskName).toObject();
-
-    QString ownerUsername = task.value("owner").toString();
-    QString loggedInUsername = UserManager::getLoggedInUsername();
-
-    if (loggedInUsername != ownerUsername) {
-        QMessageBox::warning(nullptr, "assign task to project", "Logged-in user is not the owner of the task.");
-        return;
-    }
-
-    // Assign the task to the specified project
-    task["assignee Project"] = projectName;
-
-    // Save the changes back to task.json
-    jsonObject[taskName] = task;
-    jsonDoc.setObject(jsonObject);
-
-    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-    file.write(jsonDoc.toJson());
-    file.close();
 
     // Access Project.json
     QString currentDirProject = QCoreApplication::applicationDirPath();
@@ -542,9 +571,11 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
     QFile fileProject(filePathProject);
     if (!fileProject.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open Project.json file.";
+        QMessageBox::warning(nullptr, "assign Task To Project", "Failed to open Project.json file.");
+
         return;
     }
+
 
     QByteArray fileDataProject = fileProject.readAll();
     fileProject.close();
@@ -564,6 +595,54 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
         QMessageBox::warning(nullptr, " ","Project is already in task");
         return;
     }
+
+    // Retrieve the task object
+    QJsonObject task = jsonObject.value(taskName).toObject();
+
+    QString ownerUsername = task.value("owner").toString();
+    QString loggedInUsername = UserManager::getLoggedInUsername();
+
+    if (loggedInUsername != ownerUsername) {
+        QMessageBox::warning(nullptr, "assign task to project", "Logged-in user is not the owner of the task.");
+        return;
+    }
+    QString currentDirproject = QCoreApplication::applicationDirPath();
+    QString filePathproject = currentDirproject + QDir::separator() + "project.json";
+
+    QFile fileproject(filePathproject);
+    if (!fileproject.open(QIODevice::ReadWrite)) {
+        QMessageBox::warning(nullptr, "assign Task To Project", "Failed to open project.json file.");
+
+        return;
+    }
+
+    QByteArray fileDataproject = fileproject.readAll();
+    fileproject.close();
+
+    QJsonDocument jsonDocproject = QJsonDocument::fromJson(fileDataproject);
+    QJsonObject jsonObjectproject = jsonDocproject.object();
+
+    // Check if the project exists in project.json
+    if (!jsonObjectproject.contains(projectName)) {
+        QMessageBox::warning(nullptr, "assign Task To Project", "project does not exist in project.json.");
+
+        return;
+    }
+    if (task.contains("projects") && task.value("projects").toArray().contains(projectName)) {
+        QMessageBox::warning(nullptr, "assign Task To Project", "project already exists in the tasks.");
+
+        return;
+    }
+    // Assign the task to the specified project
+    task["assignee Project"] = projectName;
+
+    // Save the changes back to task.json
+    jsonObject[taskName] = task;
+    jsonDoc.setObject(jsonObject);
+
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(jsonDoc.toJson());
+    file.close();
     // Add the heads to the Project
     tasksArray.append(taskName);
     Project["tasks"] = tasksArray;
@@ -576,94 +655,58 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
     fileProject.write(jsonDocProject.toJson());
     fileProject.close();
 
-    QMessageBox::information(nullptr, "","successfully.");
-    qDebug() << "successfully.";
-    qDebug() << "Task assigned to project successfully.";
+    QMessageBox::information(nullptr, "assign Task To Project","Task assigned to project successfully.");
 }
 
 
 
-    void Task_manager::setDueDate(const QString& taskName, const QString& dueDate) {
-        // Access task.json
-        QString currentDir = QCoreApplication::applicationDirPath();
-        QString filePath = currentDir + QDir::separator() + "task.json";
+void Task_manager::setDueDate(const QString& taskName, const QString& dueDate) {
+    // Access task.json
+    QString currentDir = QCoreApplication::applicationDirPath();
+    QString filePath = currentDir + QDir::separator() + "task.json";
 
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadWrite)) {
-            qDebug() << "Failed to open task.json file.";
-            return;
-        }
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadWrite)) {
+        QMessageBox::warning(nullptr, "set DueDate", "Failed to open task.json file.");
 
-        QByteArray fileData = file.readAll();
-        file.close();
-
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
-        QJsonObject jsonObject = jsonDoc.object();
-
-        // Check if the task exists
-        if (!jsonObject.contains(taskName)) {
-            qDebug() << "Task does not exist in task.json.";
-            return;
-        }
-        QJsonObject task = jsonObject.value(taskName).toObject();
-
-        QString ownerUsername = task.value("owner").toString();
-        QString loggedInUsername = UserManager::getLoggedInUsername();
-
-        if (loggedInUsername != ownerUsername) {
-            QMessageBox::warning(nullptr, "demote member", "Logged-in user is not the owner of the task.");
-            return;
-        }
-        // Update the due date of the task
-        task["dueDate"] = dueDate;
-
-        // Save the changes back to task.json
-        jsonObject[taskName] = task;
-        jsonDoc.setObject(jsonObject);
-
-        file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-        file.write(jsonDoc.toJson());
-        file.close();
-
-        qDebug() << "Due date set successfully.";
+        return;
     }
 
-    QString Task_manager::getDueDate(const QString& taskName) {
-        // Access task.json
-        QString currentDir = QCoreApplication::applicationDirPath();
-        QString filePath = currentDir + QDir::separator() + "task.json";
+    QByteArray fileData = file.readAll();
+    file.close();
 
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadOnly)) {
-            qDebug() << "Failed to open task.json file for reading.";
-            return QString();
-        }
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    QJsonObject jsonObject = jsonDoc.object();
 
-        QByteArray fileData = file.readAll();
-        file.close();
+    // Check if the task exists
+    if (!jsonObject.contains(taskName)) {
+        QMessageBox::warning(nullptr, "set DueDate", "Task does not exist in task.json.");
 
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
-        QJsonObject jsonObject = jsonDoc.object();
-
-        // Check if the task exists
-        if (!jsonObject.contains(taskName)) {
-            qDebug() << "Task does not exist in task.json.";
-            return QString();
-        }
-
-        // Retrieve the task object
-        QJsonObject task = jsonObject.value(taskName).toObject();
-
-        // Check if the task has a due date
-        if (task.contains("dueDate")) {
-            qDebug() << task.value("dueDate").toString();
-            return task.value("dueDate").toString();
-
-        } else {
-            qDebug() << "Task does not have a due date.";
-            return QString(); //
-        }
+        return;
     }
+    QJsonObject task = jsonObject.value(taskName).toObject();
+
+    QString ownerUsername = task.value("owner").toString();
+    QString loggedInUsername = UserManager::getLoggedInUsername();
+
+    if (loggedInUsername != ownerUsername) {
+        QMessageBox::warning(nullptr, "demote member", "Logged-in user is not the owner of the task.");
+        return;
+    }
+    // Update the due date of the task
+    task["dueDate"] = dueDate;
+
+    // Save the changes back to task.json
+    jsonObject[taskName] = task;
+    jsonDoc.setObject(jsonObject);
+
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(jsonDoc.toJson());
+    file.close();
+    QMessageBox::warning(nullptr, "set DueDate", "Due date set successfully.");
+
+}
+
 
 
     void Task_manager::addCommentToTask(const QString& taskName, const QString& commentText) {
@@ -673,7 +716,8 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
         QFile file(filePath);
         if (!file.open(QIODevice::ReadWrite)) {
-            qDebug() << "Failed to open task.json file.";
+            QMessageBox::warning(nullptr, "add Comment", "Failed to open task.json file.");
+
             return;
         }
 
@@ -685,10 +729,10 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
         // Check if the task exists
         if (!jsonObject.contains(taskName)) {
-            qDebug() << "Task does not exist in task.json.";
+            QMessageBox::warning(nullptr, "add Comment", "Task does not exist in task.json.");
+
             return;
         }
-
         // Get the task object
         QJsonObject task = jsonObject.value(taskName).toObject();
 
@@ -711,8 +755,8 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
         file.open(QIODevice::WriteOnly | QIODevice::Truncate);
         file.write(jsonDoc.toJson());
         file.close();
+        QMessageBox::warning(nullptr, "add Comment", "Comment added to the task successfully.");
 
-        qDebug() << "Comment added to the task successfully.";
     }
     void Task_manager::deleteCommentFromTask(const QString& taskName, const QString& username, const QString& commentText) {
         QString currentDir = QCoreApplication::applicationDirPath();
@@ -720,7 +764,8 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
         QFile file(filePath);
         if (!file.open(QIODevice::ReadWrite)) {
-            qDebug() << "Failed to open task.json file.";
+            QMessageBox::warning(nullptr, "delete Comment", "Failed to open task.json file.");
+
             return;
         }
 
@@ -732,7 +777,8 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
         // Check if the task exists
         if (!jsonObject.contains(taskName)) {
-            qDebug() << "Task does not exist in task.json.";
+            QMessageBox::warning(nullptr, "Delete Comment", "Task does not exist in task.json.");
+
             return;
         }
 
@@ -741,7 +787,8 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
         // Check if the task has comments
         if (!task.contains("comments")) {
-            qDebug() << "No comments found for the task.";
+            QMessageBox::warning(nullptr, "delete Comment", "No comments found for the task.");
+
             return;
         }
 
@@ -753,7 +800,8 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
             QJsonObject comment = commentsArray[i].toObject();
             if (comment.contains(username) && comment.value(username).toString() == commentText) {
                 commentsArray.removeAt(i);
-                qDebug() << "Comment deleted from the task successfully.";
+                QMessageBox::warning(nullptr, "Delete Comment","Comment deleted from the task successfully.");
+
                 break; // Assuming only one comment with the matching text per user can exist, remove the break if multiple comments with the same text per user are allowed
             }
         }
@@ -770,7 +818,7 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
         file.close();
     }
 
-    QVector<QString> Task_manager::taskNamesSorted(const QJsonObject& taskJsonObject) {
+QVector<QString> Task_manager::taskNamesSorted(const QJsonObject& taskJsonObject) {
         QVector<QString> taskNames;
 
         // Iterate through the taskanization names and add them to the list
@@ -780,7 +828,7 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
         // Sort the list alphabetically
         taskNames.sort();
-
+        QMessageBox::information(nullptr, "Task Names Sorted", "Task names have been sorted alphabetically.");
         return taskNames;
     }
 
@@ -812,8 +860,7 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
             taskNamesSortedByTime.append(pair.second);
         }
 
-        qDebug() << taskNamesSortedByTime;
-
+        QMessageBox::information(nullptr, "Tasks Sorted by Time", "Tasks have been sorted by due date.");
         return taskNamesSortedByTime;
     }
 

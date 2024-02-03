@@ -6,6 +6,9 @@
 class Task_manager
 {
 public:
+    static QString get_task();
+    static void settask(const QString &task_name);
+    static QString getDueDate(const QString &taskName);
     void createTask(const QString& OrgName, const QString& taskName , const QString& description );
     void deleteTask(const QString& OrgName, const QString& taskName);
     void archiveTask(const QString& taskName);
@@ -16,15 +19,13 @@ public:
     void assignTaskToProject(const QString& taskName, const QString& teamName);
     static void setDueDate(const QString& taskName, const QString& dueDate);
     void addCommentToTask(const QString& taskName, const QString& commentText) ;
-    //void removeCommentFromTask(const QString& taskName, const QString& commentText);
     void deleteCommentFromTask(const QString& taskName, const QString& username, const QString& commentText);
-    QString getDueDate(const QString& taskName);
     QVector<QString> taskNamesSorted(const QJsonObject& taskJsonObject);
     QVector<QString> sorttasksByTime(const QJsonObject& taskJsonObject);
 
 
 private:
-
+    static QString TaskName;
 
 };
 

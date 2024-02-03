@@ -33,25 +33,25 @@ void new_org::on_buttonBox_accepted()
     QString name = ui->lineEdit->text();
     org_manager my_org;
     //my_org.creat_organization(name);
-    // در تابعی دیگر یا در محل مناسب دیگر:
-    QString currentDir = QCoreApplication::applicationDirPath();
-    QString filePath = currentDir + QDir::separator() + "org.json";
+    // در تابعی دیگر/* یا در محل مناسب دیگر:
+//    QString currentDir = QCoreApplication::applicationDirPath();
+//    QString filePath = currentDir + QDir::separator() + "org.json";
 
-    QFile file(filePath);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Failed to open file.";
-        return;
-    }
+//    QFile file(filePath);
+//    if (!file.open(QIODevice::ReadOnly)) {
+//        qDebug() << "Failed to open file.";
+//        return;
+//    }
 
-    QByteArray fileData = file.readAll();
-    file.close();
+//    QByteArray fileData = file.readAll();
+//    file.close();
 
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
-    QJsonObject orgJsonObject = jsonDoc.object();
+//    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+//    QJsonObject orgJsonObject = jsonDoc.object();
 
     // ارسال orgJsonObject به تابع sortOrgsByTime
-    QVector<QString> sortedOrgs = my_org.orgNamesSorted(orgJsonObject);
-    qDebug() << sortedOrgs ;
+//    QVector<QString> sortedOrgs = my_org.orgNamesSorted(orgJsonObject);
+//    qDebug() << sortedOrgs ;*/
 //    QMessageBox::information(this, "Organization Created", "The organization has been created successfully.");
 //    my_org.deleteOrganization(name);
     //my_org.removeMemberFromOrganization(name, "b");
@@ -77,7 +77,7 @@ void new_org::on_buttonBox_accepted()
     //my_task.isTaskArchived("t2");
 //    my_task.setDueDate("t1" , "2024/01/01");
     //my_task.setDueDate("t1" , "2025/01/01");
-    //my_task.deleteCommentFromTask("t1", "a" ,"soooo bad");
+    my_task.addCommentToTask("t1", "noooo bad");
     //my_task.getDueDate("t1");
     //this->close();
 }
