@@ -56,7 +56,8 @@ void new_org::on_buttonBox_accepted()
 //    my_task.deleteTask("a1" , "t1");
     //my_task.unarchiveTask("t1");
     //my_task.isTaskArchived("t2");
-    my_task.assignTaskToProject("t1" , "p1");
+//    my_task.setDueDate("t1" , "2024/01/01");
+    my_task.setDueDate("t1" , "2025/01/01");
     //this->close();
 }
 

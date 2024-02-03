@@ -582,40 +582,47 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
 
 
-//static void setDueDate(const QString& taskName, const QDateTime& dueDate) {
-//        // Access task.json
-//        QString currentDir = QCoreApplication::applicationDirPath();
-//        QString filePath = currentDir + QDir::separator() + "task.json";
+    void Task_manager::setDueDate(const QString& taskName, const QString& dueDate) {
+        // Access task.json
+        QString currentDir = QCoreApplication::applicationDirPath();
+        QString filePath = currentDir + QDir::separator() + "task.json";
 
-//        QFile file(filePath);
-//        if (!file.open(QIODevice::ReadWrite)) {
-//            qDebug() << "Failed to open task.json file.";
-//            return;
-//        }
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadWrite)) {
+            qDebug() << "Failed to open task.json file.";
+            return;
+        }
 
-//        QByteArray fileData = file.readAll();
-//        file.close();
+        QByteArray fileData = file.readAll();
+        file.close();
 
-//        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
-//        QJsonObject jsonObject = jsonDoc.object();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+        QJsonObject jsonObject = jsonDoc.object();
 
-//        // Check if the task exists
-//        if (!jsonObject.contains(taskName)) {
-//            qDebug() << "Task does not exist in task.json.";
-//            return;
-//        }
+        // Check if the task exists
+        if (!jsonObject.contains(taskName)) {
+            qDebug() << "Task does not exist in task.json.";
+            return;
+        }
+        QJsonObject task = jsonObject.value(taskName).toObject();
 
-//        // Update the due date of the task
-//        QJsonObject task = jsonObject.value(taskName).toObject();
-//        task["dueDate"] = dueDate.toString(Qt::ISODate);
+        QString ownerUsername = task.value("owner").toString();
+        QString loggedInUsername = UserManager::getLoggedInUsername();
 
-//        // Save the changes back to task.json
-//        jsonObject[taskName] = task;
-//        jsonDoc.setObject(jsonObject);
+        if (loggedInUsername != ownerUsername) {
+            QMessageBox::warning(nullptr, "demote member", "Logged-in user is not the owner of the task.");
+            return;
+        }
+        // Update the due date of the task
+        task["dueDate"] = dueDate;
 
-//        file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-//        file.write(jsonDoc.toJson());
-//        file.close();
+        // Save the changes back to task.json
+        jsonObject[taskName] = task;
+        jsonDoc.setObject(jsonObject);
 
-//        qDebug() << "Due date set successfully.";
-//    }
+        file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+        file.write(jsonDoc.toJson());
+        file.close();
+
+        qDebug() << "Due date set successfully.";
+    }

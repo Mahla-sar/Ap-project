@@ -16,7 +16,6 @@ public:
     void removeMemberFromproject(const QString& orgName, const QString& projectName, const QString& memberUsername);
     void updateProjectState(const QString& orgName, const QString& projectName, const QString& newState);
     bool is_doneProject(const QString& projectName);
-
 private:
     static QString ProjectName;
 
