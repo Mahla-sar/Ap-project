@@ -10,6 +10,12 @@ public:
     static QString getLoggedInUsername();
     static QJsonObject getLoggedInUserData();
     static void logout();
+    void resetPassword(const QJsonObject &userData, const QString &newPassword);
+
+    bool authenticateAndResetPassword(const QString& enteredUsername, const QString& enteredName,
+                                                  const QString& enteredEmail, const int& enteredAge,
+                                                  const QString& newPassword);
+
 
 private:
     static QString loggedInUsername;
