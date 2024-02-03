@@ -22,7 +22,8 @@ public:
     void promoteMemberToAdminInOrganization(const QString& orgName, const QString& memberName);
     void demoteAdminToMember(const QString& orgName, const QString& adminName);
     void editOrganizationName(const QString& oldName, const QString& newName);
-
+    QVector<QString> orgNamesSorted(const QJsonObject& orgJsonObject);
+    QVector<QString> sortOrgsByTime(const QJsonObject& orgJsonObject);
 
 private :
     static QString OrganizationName;

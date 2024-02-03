@@ -13,7 +13,9 @@
 #include "taski.h"
 #include "userManager.h"
 #include "org_manager.h"
-
+#include <QMap>
+#include <QStringList>
+#include <QList>
 QString org_manager::OrganizationName ;
 
 QString org_manager::get_organization() {
@@ -73,14 +75,14 @@ void org_manager::creat_organization(const QString& name){
     QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
     QJsonObject org;
     org["name"] = name;
-    OrganizationName = name;
+    OrganizationName=name;
     org["members"] = QJsonArray();
     org["admins"] = QJsonArray();
     org["teams"] = QJsonArray();
     org["projects"] = QJsonArray();
     org["owner"] = loggedInUsername;
-
-
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    org["time to build"] = currentDateTime.toString();
     // Add loggedInUsername to members
     QJsonArray membersArray = org["members"].toArray();
     membersArray.append(loggedInUsername);
@@ -668,4 +670,51 @@ void org_manager::demoteAdminToMember(const QString& orgName, const QString& adm
     file.close();
 }
 
+
+QVector<QString> org_manager::orgNamesSorted(const QJsonObject& orgJsonObject) {
+    QVector<QString> orgNames;
+
+    // Iterate through the organization names and add them to the list
+    for (auto it = orgJsonObject.begin(); it != orgJsonObject.end(); ++it) {
+        orgNames.append(it.key());
+    }
+
+    // Sort the list alphabetically
+    orgNames.sort();
+
+    return orgNames;
+}
+
+
+
+QVector<QString> org_manager::sortOrgsByTime(const QJsonObject& orgJsonObject) {
+    QVector<QString> orgNamesSortedByTime;
+
+    // Create a vector to store pairs of time and organization name
+    QVector<QPair<QString, QString>> orgTimePairs;
+
+    // Iterate through the organizations and extract the date strings and organization names
+    for (auto it = orgJsonObject.begin(); it != orgJsonObject.end(); ++it) {
+        QJsonObject orgObject = it.value().toObject();
+        QString timeToBuildString = orgObject["time to build"].toString();
+        QString orgName = it.key();
+
+        // Add the pair of time and organization name to the vector
+        orgTimePairs.append(qMakePair(timeToBuildString, orgName));
+    }
+
+    // Sort the vector based on time strings
+    std::sort(orgTimePairs.begin(), orgTimePairs.end(), [](const QPair<QString, QString>& a, const QPair<QString, QString>& b) {
+        return a.first < b.first; // Compare time strings
+    });
+
+    // Extract the organization names from the sorted pairs
+    for (const auto& pair : orgTimePairs) {
+        orgNamesSortedByTime.append(pair.second);
+    }
+
+    qDebug() << orgNamesSortedByTime;
+
+    return orgNamesSortedByTime;
+}
 
