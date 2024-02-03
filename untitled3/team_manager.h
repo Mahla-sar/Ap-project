@@ -16,6 +16,8 @@ public:
     void promoteMemberToHeadInTeam(const QString& orgName, const QString& teamName, const QString& membername);
     void demoteHeadToMemberInTeam(const QString& orgName, const QString& teamName, const QString& memberUsername);
     static void setTeam(const QString &team_name) ;
+    QVector<QString> teamNamesSorted(const QJsonObject& teamJsonObject);
+    QVector<QString> sortteamsByTime(const QJsonObject& teamJsonObject);
 
 private:
     static QString TeamName;

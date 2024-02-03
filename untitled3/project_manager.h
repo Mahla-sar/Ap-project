@@ -16,8 +16,8 @@ public:
     void removeMemberFromproject(const QString& orgName, const QString& projectName, const QString& memberUsername);
     void updateProjectState(const QString& orgName, const QString& projectName, const QString& newState);
     bool is_doneProject(const QString& projectName);
-    QVector<QString> projectNamesSorted(const QJsonObject& orgJsonObject);
-    QVector<QString> sortprojectsByTime(const QJsonObject& orgJsonObject);
+    QVector<QString> projectNamesSorted(const QJsonObject& projectJsonObject);
+    QVector<QString> sortprojectsByTime(const QJsonObject& projectJsonObject);
 private:
     static QString ProjectName;
 
