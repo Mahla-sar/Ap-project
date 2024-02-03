@@ -58,7 +58,8 @@ void new_org::on_buttonBox_accepted()
     //my_task.isTaskArchived("t2");
 //    my_task.setDueDate("t1" , "2024/01/01");
     //my_task.setDueDate("t1" , "2025/01/01");
-    my_task.deleteCommentFromTask("t1", "a" ,"soooo bad");
+    //my_task.deleteCommentFromTask("t1", "a" ,"soooo bad");
+    my_task.getDueDate("t1");
     //this->close();
 }
 

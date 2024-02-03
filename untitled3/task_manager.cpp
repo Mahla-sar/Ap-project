@@ -628,6 +628,44 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
         qDebug() << "Due date set successfully.";
     }
 
+    QString Task_manager::getDueDate(const QString& taskName) {
+        // Access task.json
+        QString currentDir = QCoreApplication::applicationDirPath();
+        QString filePath = currentDir + QDir::separator() + "task.json";
+
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly)) {
+            qDebug() << "Failed to open task.json file for reading.";
+            return QString();
+        }
+
+        QByteArray fileData = file.readAll();
+        file.close();
+
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+        QJsonObject jsonObject = jsonDoc.object();
+
+        // Check if the task exists
+        if (!jsonObject.contains(taskName)) {
+            qDebug() << "Task does not exist in task.json.";
+            return QString();
+        }
+
+        // Retrieve the task object
+        QJsonObject task = jsonObject.value(taskName).toObject();
+
+        // Check if the task has a due date
+        if (task.contains("dueDate")) {
+            qDebug() << task.value("dueDate").toString();
+            return task.value("dueDate").toString();
+
+        } else {
+            qDebug() << "Task does not have a due date.";
+            return QString(); //
+        }
+    }
+
+
     void Task_manager::addCommentToTask(const QString& taskName, const QString& commentText) {
         // Access task.json
         QString currentDir = QCoreApplication::applicationDirPath();

@@ -18,7 +18,7 @@ public:
     void addCommentToTask(const QString& taskName, const QString& commentText) ;
     //void removeCommentFromTask(const QString& taskName, const QString& commentText);
     void deleteCommentFromTask(const QString& taskName, const QString& username, const QString& commentText);
-
+    QString getDueDate(const QString& taskName);
 
 
 private:
