@@ -15,6 +15,7 @@ public:
     void assignTaskToTeam(const QString& taskName, const QString& teamName);
     void assignTaskToProject(const QString& taskName, const QString& teamName);
     static void setDueDate(const QString& taskName, const QString& dueDate);
+    void addCommentToTask(const QString& taskName, const QString& commentText) ;
 
 
 

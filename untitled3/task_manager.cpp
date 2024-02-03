@@ -16,6 +16,7 @@
 #include "org_manager.h"
 #include "project_manager.h"
 #include "team_manager.h"
+
 void Task_manager::createTask(const QString& OrgName, const QString& taskName , const QString& description) {
         // Access task.json
         QString currentDir = QCoreApplication::applicationDirPath();
@@ -626,3 +627,53 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
         qDebug() << "Due date set successfully.";
     }
+
+    void Task_manager::addCommentToTask(const QString& taskName, const QString& commentText) {
+        // Access task.json
+        QString currentDir = QCoreApplication::applicationDirPath();
+        QString filePath = currentDir + QDir::separator() + "task.json";
+
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadWrite)) {
+            qDebug() << "Failed to open task.json file.";
+            return;
+        }
+
+        QByteArray fileData = file.readAll();
+        file.close();
+
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+        QJsonObject jsonObject = jsonDoc.object();
+
+        // Check if the task exists
+        if (!jsonObject.contains(taskName)) {
+            qDebug() << "Task does not exist in task.json.";
+            return;
+        }
+
+        // Get the task object
+        QJsonObject task = jsonObject.value(taskName).toObject();
+
+        // Create a new comment object
+        QJsonArray commentsArray = task.value("comments").toArray();
+        QJsonObject newComment;
+        QString loggedInUsername = UserManager::getLoggedInUsername();
+
+        newComment[loggedInUsername] = commentText;
+        //newComment["timestamp"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+
+        // Add the new comment to the comments array
+        commentsArray.append(newComment);
+        task["comments"] = commentsArray;
+
+        // Save the changes back to task.json
+        jsonObject[taskName] = task;
+        jsonDoc.setObject(jsonObject);
+
+        file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+        file.write(jsonDoc.toJson());
+        file.close();
+
+        qDebug() << "Comment added to the task successfully.";
+    }
+
