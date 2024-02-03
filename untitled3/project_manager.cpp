@@ -95,6 +95,9 @@ void Project_manager::createproject(const QString& orgName, const QString& proje
     project["heads"] = QJsonArray();
     project["organization"] = orgName;  // Set the organization name for the project
     // Add loggedInUsername to members
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+    project["time to build"] = currentDateTime.toString();
+
     QJsonArray membersArray = project["members"].toArray();
     membersArray.append(loggedInUsername);
     project["members"] = membersArray;
@@ -740,6 +743,52 @@ bool Project_manager::is_doneProject(const QString& projectName) {
     // Check the project state
     QString projectState = project.value("state").toString();
     return (projectState.toLower() == "done");
+}
+QVector<QString> Project_manager::projectNamesSorted(const QJsonObject& projectJsonObject) {
+    QVector<QString> projectNames;
+
+    // Iterate through the projectanization names and add them to the list
+    for (auto it = projectJsonObject.begin(); it != projectJsonObject.end(); ++it) {
+        projectNames.append(it.key());
+    }
+
+    // Sort the list alphabetically
+    projectNames.sort();
+
+    return projectNames;
+}
+
+
+
+QVector<QString> Project_manager::sortprojectsByTime(const QJsonObject& projectJsonObject) {
+    QVector<QString> projectNamesSortedByTime;
+
+    // Create a vector to store pairs of time and projectanization name
+    QVector<QPair<QString, QString>> projectTimePairs;
+
+    // Iterate through the projects and extract the date strings and project names
+    for (auto it = projectJsonObject.begin(); it != projectJsonObject.end(); ++it) {
+        QJsonObject projectObject = it.value().toObject();
+        QString timeToBuildString = projectObject["time to build"].toString();
+        QString projectName = it.key();
+
+        // Add the pair of time and project name to the vector
+        projectTimePairs.append(qMakePair(timeToBuildString, projectName));
+    }
+
+    // Sort the vector based on time strings
+    std::sort(projectTimePairs.begin(), projectTimePairs.end(), [](const QPair<QString, QString>& a, const QPair<QString, QString>& b) {
+        return a.first < b.first; // Compare time strings
+    });
+
+    // Extract the projectanization names from the sorted pairs
+    for (const auto& pair : projectTimePairs) {
+        projectNamesSortedByTime.append(pair.second);
+    }
+
+    qDebug() << projectNamesSortedByTime;
+
+    return projectNamesSortedByTime;
 }
 
 

@@ -52,7 +52,6 @@ void new_org::on_buttonBox_accepted()
     // ارسال orgJsonObject به تابع sortOrgsByTime
     QVector<QString> sortedOrgs = my_org.orgNamesSorted(orgJsonObject);
     qDebug() << sortedOrgs ;
-    // sortedOrgs حاوی نام‌های سازمان‌ها مرتب شده بر اساس زمان ساخت است
 //    QMessageBox::information(this, "Organization Created", "The organization has been created successfully.");
 //    my_org.deleteOrganization(name);
     //my_org.removeMemberFromOrganization(name, "b");
