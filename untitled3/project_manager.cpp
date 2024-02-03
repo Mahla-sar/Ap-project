@@ -52,7 +52,7 @@ void Project_manager::createproject(const QString& orgName, const QString& proje
 
     // Check if the project already exists
     if (org.contains("projects") && org.value("projects").toArray().contains(projectName)) {
-        qDebug() << "project already exists in the organization.";
+        QMessageBox::warning(nullptr, "Creat project", "project already exists in the organization.");
         return;
     }
     //
@@ -62,8 +62,7 @@ void Project_manager::createproject(const QString& orgName, const QString& proje
 
     // Check if the logged-in user is an admin of the organization
     if (!adminsArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an admin of the organization.";
-        //QMessageBox::warning(this, "Add Member", "You are not authorized to add members to this organization.");
+        QMessageBox::warning(nullptr, "creat project", "Logged-in user is not an admin of the organization.");
         return;
     }
     QJsonArray projectsArray = org.value("projects").toArray();
@@ -81,7 +80,7 @@ void Project_manager::createproject(const QString& orgName, const QString& proje
 
     QFile fileproject(filePathproject);
     if (!fileproject.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open project.json file.";
+        QMessageBox::warning(nullptr, "creat project", "Failed to open project.json file.");
         return;
     }
 
@@ -110,7 +109,7 @@ void Project_manager::createproject(const QString& orgName, const QString& proje
 
     QJsonObject jsonObjectproject = jsonDocproject.object();
     if (projectName.isEmpty() || jsonObjectproject.contains(projectName)) {
-        qDebug() << "project name is empty or already exists.";
+        QMessageBox::warning(nullptr, "creat project", "project name is empty or already exists.");
         return;
     }
 
@@ -121,23 +120,18 @@ void Project_manager::createproject(const QString& orgName, const QString& proje
     fileproject.write(jsonDocproject.toJson());
     fileproject.close();
 
-    // Add the new project to the organization
-//    QJsonArray projectsArray = org["projects"].toArray();
-//    projectsArray.append(projectName);
-//    org["projects"] = projectsArray;
-
     // Save the changes back to org.json
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(QJsonDocument(jsonObject).toJson());
     file.close();
 
-    qDebug() << "project created successfully.";
+    QMessageBox::information(nullptr, "creat project", "project created successfully.");
     QString currentDirtext = QCoreApplication::applicationDirPath();
     QString filePathtext = currentDirtext + QDir::separator() + "text.json";
     QFile filetext(filePathtext);
     if (!filetext.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open file.";
-        return;
+        QMessageBox::warning(nullptr, "creat project", "Failed to open file.");
+                return;
     }
 
     QByteArray fileDatatext = filetext.readAll();
@@ -171,7 +165,8 @@ void Project_manager::renameproject(const QString& orgName, const QString& oldpr
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open org.json file.";
+        QMessageBox::warning(nullptr, "rename project", "Failed to open org.json file.");
+
         return;
     }
 
@@ -183,7 +178,7 @@ void Project_manager::renameproject(const QString& orgName, const QString& oldpr
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "Rename project", "Organization does not exist in org.json.");
         return;
     }
 
@@ -192,7 +187,7 @@ void Project_manager::renameproject(const QString& orgName, const QString& oldpr
     // Check if the project exists in the organization
     QJsonArray projectsArray = org.value("projects").toArray();
     if (!projectsArray.contains(oldprojectName)) {
-        qDebug() << "project does not exist in the organization.";
+        QMessageBox::warning(nullptr, "Rename project", "project does not exist in the organization.");
         return;
     }
 
@@ -200,7 +195,7 @@ void Project_manager::renameproject(const QString& orgName, const QString& oldpr
     QString loggedInUsername = UserManager::getLoggedInUsername();
     QJsonArray adminsArray = org.value("admins").toArray();
     if (!adminsArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an admin of the organization.";
+        QMessageBox::warning(nullptr, "Rename project", "Logged-in user is not an admin of the organization.");
         return;
     }
 
@@ -222,7 +217,7 @@ void Project_manager::renameproject(const QString& orgName, const QString& oldpr
 
     // Check if the project exists in project.json
     if (!jsonObjectproject.contains(oldprojectName)) {
-        qDebug() << "project does not exist in project.json.";
+        QMessageBox::warning(nullptr, "Rename project", "project does not exist in project.json.");
         return;
     }
 
@@ -275,7 +270,7 @@ void Project_manager::renameproject(const QString& orgName, const QString& oldpr
     // Update the project name in the user's project list
     QJsonObject jsonObjecttext = jsonDoctext.object();
     if (!jsonObjecttext.contains(loggedInUsername)) {
-        qDebug() << "User not found in text.json.";
+        QMessageBox::warning(nullptr, "Rename project", "User not found in text.json.");
         return;
     }
 
@@ -283,7 +278,7 @@ void Project_manager::renameproject(const QString& orgName, const QString& oldpr
     QJsonValue projectsValue = user.value("projects");
 
     if (!projectsValue.isArray()) {
-        qDebug() << "projects list is not an array for the logged-in user.";
+        QMessageBox::warning(nullptr, "Rename project", "projects list is not an array for the logged-in user.");
         return;
     }
 
@@ -297,6 +292,7 @@ void Project_manager::renameproject(const QString& orgName, const QString& oldpr
         }
     }
     user["projects"] = projectArray;
+    QMessageBox::information(nullptr, "Rename project", "project's name has been changed succesfully");
 
     // Save the changes back to text.json
     jsonObjecttext[loggedInUsername] = user;
@@ -331,7 +327,7 @@ void Project_manager::deleteproject(const QString& orgName, const QString& proje
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "Delete project", "Organization does not exist in org.json.");
         return;
     }
 
@@ -339,7 +335,7 @@ void Project_manager::deleteproject(const QString& orgName, const QString& proje
 
     // Check if the project exists in the organization
     if (!org.contains("projects") || !org.value("projects").toArray().contains(projectName)) {
-        qDebug() << "project does not exist in the organization.";
+        QMessageBox::warning(nullptr, "Delete project", "project does not exist in the organization.");
         return;
     }
 
@@ -388,7 +384,7 @@ void Project_manager::deleteproject(const QString& orgName, const QString& proje
 
     QString ownerstr = project.value("owner").toString();
     if (!ownerstr.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an owner of the project.";
+        QMessageBox::warning(nullptr, "Delete project", "Logged-in user is not an owner of the project.");
         return;
     }
     // Remove the project from project.json
@@ -400,7 +396,7 @@ void Project_manager::deleteproject(const QString& orgName, const QString& proje
     fileproject.write(jsonDocproject.toJson());
     fileproject.close();
 
-    qDebug() << "project deleted successfully.";
+    QMessageBox::information(nullptr, "Delete project", "project deleted successfully.");
 }
 
 
@@ -411,7 +407,7 @@ void Project_manager::addMemberToproject(const QString& orgName, const QString& 
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open org.json file.";
+        QMessageBox::warning(nullptr, "Add member", "Failed to open org.json file.");
         return;
     }
 
@@ -423,35 +419,31 @@ void Project_manager::addMemberToproject(const QString& orgName, const QString& 
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "Add member", "Organization does not exist in org.json.");
         return;
     }
 
     QJsonObject org = jsonObject.value(orgName).toObject();
 
     QString loggedInUsername = UserManager::getLoggedInUsername();
-//    QJsonArray headsArray = project.value("heads").toArray();
-//    if (!headsArray.contains(loggedInUsername)) {
-//        qDebug() << "Logged-in user is not an heads of the project.";
-//        return;
-//    }
+
 
 
     // Check if the project exists in the organization
     if (!org.contains("projects") || !org.value("projects").toArray().contains(projectName)) {
-        qDebug() << "project does not exist in the organization.";
+        QMessageBox::warning(nullptr, "Add member", "project does not exist in the organization.");
         return;
     }
 
     // Check if the member is part of the organization
     if (!org.contains("members") || !org.value("members").toArray().contains(memberUsername)) {
-        qDebug() << "Member does not exist in the organization.";
+        QMessageBox::warning(nullptr, "Add member", "Member does not exist in the organization.");
         return;
     }
 
     // Check if the logged-in user is trying to add themselves as a member
     if (loggedInUsername == memberUsername) {
-        qDebug() << "Cannot add yourself as a member.";
+        QMessageBox::warning(nullptr, "Add member", "Cannot add yourself as a member.");
         return;
     }
 
@@ -461,7 +453,7 @@ void Project_manager::addMemberToproject(const QString& orgName, const QString& 
 
     QFile fileproject(filePathproject);
     if (!fileproject.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open project.json file.";
+        QMessageBox::warning(nullptr, "Add member", "Failed to open project.json file.");
         return;
     }
 
@@ -473,22 +465,22 @@ void Project_manager::addMemberToproject(const QString& orgName, const QString& 
 
     // Check if the project exists in project.json
     if (!jsonObjectproject.contains(projectName)) {
-        qDebug() << "project does not exist in project.json.";
+        QMessageBox::warning(nullptr, "Add member", "project does not exist in project.json.");
         return;
     }
     //QJsonObject project = jsonObject.value(projectName).toObject();
     QJsonObject project = jsonObjectproject.value(projectName).toObject();
 
-    QJsonArray headsArrayTeam = project.value("heads").toArray();
-    if (!headsArrayTeam.contains(loggedInUsername)) {
-        QMessageBox::warning(nullptr, "Add member","Logged-in user is not a head of the team.");
+    QJsonArray headsArrayProject = project.value("heads").toArray();
+    if (!headsArrayProject.contains(loggedInUsername)) {
+        QMessageBox::warning(nullptr, "Add member","Logged-in user is not a head of the project.");
         return;
     }
 
     // Check if the member is already part of the project
     QJsonArray membersArray = project.value("members").toArray();
     if (membersArray.contains(memberUsername)) {
-        qDebug() << "Member is already part of the project.";
+        QMessageBox::warning(nullptr, "Add member", "Member is already part of the project.");
         return;
     }
 
@@ -504,13 +496,12 @@ void Project_manager::addMemberToproject(const QString& orgName, const QString& 
     fileproject.write(jsonDocproject.toJson());
     fileproject.close();
 
-    qDebug() << "Member added to the project successfully.";
 
     QString currentDirtext = QCoreApplication::applicationDirPath();
     QString filePathtext = currentDirtext + QDir::separator() + "text.json";
     QFile filetext(filePathtext);
     if (!filetext.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open file.";
+        QMessageBox::warning(nullptr, "Add member", "Failed to open text.json file.");
         return;
     }
 
@@ -536,6 +527,8 @@ void Project_manager::addMemberToproject(const QString& orgName, const QString& 
     filetext.open(QIODevice::WriteOnly | QIODevice::Truncate);
     filetext.write(QJsonDocument(jsonObjecttext).toJson());
     filetext.close();
+    QMessageBox::information(nullptr, "Add member", "Member added to the project successfully.");
+
 }
 
 
@@ -546,7 +539,7 @@ void Project_manager::removeMemberFromproject(const QString& orgName, const QStr
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open org.json file.";
+        QMessageBox::warning(nullptr, "Add member", "Failed to open org.json file.");
         return;
     }
 
@@ -558,7 +551,7 @@ void Project_manager::removeMemberFromproject(const QString& orgName, const QStr
 
     // Check if the organization exists
     if (!jsonObject.contains(orgName)) {
-        qDebug() << "Organization does not exist in org.json.";
+        QMessageBox::warning(nullptr, "Remove member", "Organization does not exist in org.json.");
         return;
     }
 
@@ -567,7 +560,7 @@ void Project_manager::removeMemberFromproject(const QString& orgName, const QStr
 
     // Check if the project exists in the organization
     if (!org.contains("projects") || !org.value("projects").toArray().contains(projectName)) {
-        qDebug() << "project does not exist in the organization.";
+        QMessageBox::warning(nullptr, "Remove member", "project does not exist in the organization.");
         return;
     }
 
@@ -577,7 +570,7 @@ void Project_manager::removeMemberFromproject(const QString& orgName, const QStr
 
     QFile fileproject(filePathproject);
     if (!fileproject.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open project.json file.";
+        QMessageBox::warning(nullptr, "Add member", "Failed to open project.json file.");
         return;
     }
 
@@ -589,32 +582,24 @@ void Project_manager::removeMemberFromproject(const QString& orgName, const QStr
 
     // Check if the project exists in project.json
     if (!jsonObjectproject.contains(projectName)) {
-        qDebug() << "project does not exist in project.json.";
+        QMessageBox::warning(nullptr, "Remove member", "project does not exist in the organization.");
         return;
     }
 
-    //QJsonObject project = jsonObjectproject.value(projectName).toObject();
-//    QJsonArray headsArrayproject = project.value("heads").toArray();
-
-//    // Check if the logged-in user is an heads of the project
-//    if (!headsArrayproject.contains(loggedInUsername)) {
-//        qDebug() << "Logged-in user is not an heads of the project.";
-//        return;
-//    }
     QJsonObject project = jsonObjectproject.value(projectName).toObject();
 
     //QJsonObject project = jsonObject.value(projectName).toObject();
     QString loggedInUsername = UserManager::getLoggedInUsername();
     QJsonArray headsArray = project.value("heads").toArray();
     if (!headsArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not an heads of the project.";
+        QMessageBox::warning(nullptr, "Remove member", "Logged-in user is not an heads of the project.");
         return;
     }
 
     // Check if the member is part of the project
     QJsonArray membersArray = project.value("members").toArray();
     if (!membersArray.contains(memberUsername)) {
-        qDebug() << "Member is not part of the project.";
+        QMessageBox::warning(nullptr, "Remove member", "Member is not part of the project.");
         return;
     }
 
@@ -655,7 +640,7 @@ void Project_manager::removeMemberFromproject(const QString& orgName, const QStr
 
     // Check if the member exists in text.json
     if (!jsonObjecttext.contains(memberUsername)) {
-        qDebug() << "Member does not exist in text.json.";
+        QMessageBox::warning(nullptr, "Remove member", "Member does not exist in text.json.");
         return;
     }
 
@@ -677,7 +662,7 @@ void Project_manager::removeMemberFromproject(const QString& orgName, const QStr
     filetext.write(jsonDoctext.toJson());
     filetext.close();
 
-    qDebug() << "Member removed from the project in text.json successfully.";
+    QMessageBox::information(nullptr, "Remove member", "Member removed from the project in text.json successfully.");
 }
 
 void Project_manager::updateProjectState(const QString& orgName, const QString& projectName, const QString& newState) {
@@ -687,7 +672,7 @@ void Project_manager::updateProjectState(const QString& orgName, const QString& 
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadWrite)) {
-        qDebug() << "Failed to open project.json file.";
+        QMessageBox::warning(nullptr, "Project State", "Failed to open project.json file.");
         return;
     }
 
@@ -699,7 +684,7 @@ void Project_manager::updateProjectState(const QString& orgName, const QString& 
 
     // Check if the project exists
     if (!jsonObject.contains(projectName)) {
-        qDebug() << "Project does not exist in project.json.";
+        QMessageBox::warning(nullptr, "Project State", "Project does not exist in project.json.");
         return;
     }
 
@@ -709,7 +694,7 @@ void Project_manager::updateProjectState(const QString& orgName, const QString& 
     QString loggedInUsername = UserManager::getLoggedInUsername();
     QJsonArray headsArray = project.value("heads").toArray();
     if (!headsArray.contains(loggedInUsername)) {
-        qDebug() << "Logged-in user is not a head of the project.";
+        QMessageBox::warning(nullptr, "Project State" ,"Logged-in user is not a head of the project.");
         return;
     }
 
@@ -723,8 +708,8 @@ void Project_manager::updateProjectState(const QString& orgName, const QString& 
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(jsonDoc.toJson());
     file.close();
+    QMessageBox::warning(nullptr, "Project State" ,"Project state updated successfully.");
 
-    qDebug() << "Project state updated successfully.";
 }
 
 bool Project_manager::is_doneProject(const QString& projectName) {
@@ -734,7 +719,7 @@ bool Project_manager::is_doneProject(const QString& projectName) {
 
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Failed to open project.json file.";
+        QMessageBox::warning(nullptr, "is done project" ,"Failed to open project.json file.");
         return false;  // Assuming "undone" as default if the file cannot be opened
     }
 
@@ -746,7 +731,7 @@ bool Project_manager::is_doneProject(const QString& projectName) {
 
     // Check if the project exists
     if (!jsonObject.contains(projectName)) {
-        qDebug() << "Project does not exist in project.json.";
+        QMessageBox::warning(nullptr, "is done project" ,"Failed to open project.json file.");
         return false;
     }
 
