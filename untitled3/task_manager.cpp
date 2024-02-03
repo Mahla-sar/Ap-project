@@ -676,4 +676,59 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
 
         qDebug() << "Comment added to the task successfully.";
     }
+    void Task_manager::deleteCommentFromTask(const QString& taskName, const QString& username, const QString& commentText) {
+        QString currentDir = QCoreApplication::applicationDirPath();
+        QString filePath = currentDir + QDir::separator() + "task.json";
+
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadWrite)) {
+            qDebug() << "Failed to open task.json file.";
+            return;
+        }
+
+        QByteArray fileData = file.readAll();
+        file.close();
+
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+        QJsonObject jsonObject = jsonDoc.object();
+
+        // Check if the task exists
+        if (!jsonObject.contains(taskName)) {
+            qDebug() << "Task does not exist in task.json.";
+            return;
+        }
+
+        // Get the task object
+        QJsonObject task = jsonObject.value(taskName).toObject();
+
+        // Check if the task has comments
+        if (!task.contains("comments")) {
+            qDebug() << "No comments found for the task.";
+            return;
+        }
+
+        // Get the comments array
+        QJsonArray commentsArray = task.value("comments").toArray();
+
+        // Find and remove the comment with the specified username and comment text
+        for (int i = 0; i < commentsArray.size(); ++i) {
+            QJsonObject comment = commentsArray[i].toObject();
+            if (comment.contains(username) && comment.value(username).toString() == commentText) {
+                commentsArray.removeAt(i);
+                qDebug() << "Comment deleted from the task successfully.";
+                break; // Assuming only one comment with the matching text per user can exist, remove the break if multiple comments with the same text per user are allowed
+            }
+        }
+
+        // Update the comments array in the task object
+        task["comments"] = commentsArray;
+
+        // Update the task object in the JSON
+        jsonObject[taskName] = task;
+        jsonDoc.setObject(jsonObject);
+
+        file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+        file.write(jsonDoc.toJson());
+        file.close();
+    }
 
