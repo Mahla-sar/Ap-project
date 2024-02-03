@@ -899,6 +899,21 @@ void team_manager::demoteHeadToMemberInTeam(const QString& orgName, const QStrin
     QMessageBox::information(nullptr, "demote member", "Head role demoted to member in the team successfully.");
 }
 
+QVector<QString> team_manager::teamNamesSorted(const QJsonObject& teamJsonObject) {
+    QVector<QString> teamNames;
+
+    // Iterate through the teamanization names and add them to the list
+    for (auto it = teamJsonObject.begin(); it != teamJsonObject.end(); ++it) {
+        teamNames.append(it.key());
+    }
+
+    // Sort the list alphabetically
+    teamNames.sort();
+
+    return teamNames;
+}
+
+
 
 QVector<QString> team_manager::sortteamsByTime(const QJsonObject& teamJsonObject) {
     QVector<QString> teamNamesSortedByTime;
