@@ -770,3 +770,50 @@ void Task_manager::assignTaskToProject(const QString& taskName, const QString& p
         file.close();
     }
 
+    QVector<QString> Task_manager::taskNamesSorted(const QJsonObject& taskJsonObject) {
+        QVector<QString> taskNames;
+
+        // Iterate through the taskanization names and add them to the list
+        for (auto it = taskJsonObject.begin(); it != taskJsonObject.end(); ++it) {
+            taskNames.append(it.key());
+        }
+
+        // Sort the list alphabetically
+        taskNames.sort();
+
+        return taskNames;
+    }
+
+
+
+    QVector<QString> Task_manager::sorttasksByTime(const QJsonObject& taskJsonObject) {
+        QVector<QString> taskNamesSortedByTime;
+
+        // Create a vector to store pairs of time and taskanization name
+        QVector<QPair<QString, QString>> taskTimePairs;
+
+        // Iterate through the taskanizations and extract the date strings and taskanization names
+        for (auto it = taskJsonObject.begin(); it != taskJsonObject.end(); ++it) {
+            QJsonObject taskObject = it.value().toObject();
+            QString timeToBuildString = taskObject["dueDate"].toString();
+            QString taskName = it.key();
+
+            // Add the pair of time and taskanization name to the vector
+            taskTimePairs.append(qMakePair(timeToBuildString, taskName));
+        }
+
+        // Sort the vector based on time strings
+        std::sort(taskTimePairs.begin(), taskTimePairs.end(), [](const QPair<QString, QString>& a, const QPair<QString, QString>& b) {
+            return a.first < b.first; // Compare time strings
+        });
+
+        // Extract the taskanization names from the sorted pairs
+        for (const auto& pair : taskTimePairs) {
+            taskNamesSortedByTime.append(pair.second);
+        }
+
+        qDebug() << taskNamesSortedByTime;
+
+        return taskNamesSortedByTime;
+    }
+

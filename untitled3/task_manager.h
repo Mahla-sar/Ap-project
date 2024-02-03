@@ -19,6 +19,8 @@ public:
     //void removeCommentFromTask(const QString& taskName, const QString& commentText);
     void deleteCommentFromTask(const QString& taskName, const QString& username, const QString& commentText);
     QString getDueDate(const QString& taskName);
+    QVector<QString> taskNamesSorted(const QJsonObject& taskJsonObject);
+    QVector<QString> sorttasksByTime(const QJsonObject& taskJsonObject);
 
 
 private:
