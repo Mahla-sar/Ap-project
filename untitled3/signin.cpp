@@ -63,16 +63,16 @@ void signin::on_buttonBox_2_accepted()
         QMessageBox::warning(this, "Sign in", "Please fill in all the fields.");
         return;
     }
-//    else if(pass.size()<8 ){
-//            QMessageBox::warning(this, "Sign in", "Password must be at least 8 characters long.");
-//            return;
-//    }
+   else if(pass.size()<8 ){
+           QMessageBox::warning(this, "Sign in", "Password must be at least 8 characters long.");
+           return;
+   }
 
 
-//    else if (!(std::any_of(pass.begin(), pass.end(), ::isupper) && std::any_of(pass.begin(), pass.end(), ::islower))) {
-//        QMessageBox::warning(this, "Sign in", "Password must contain both uppercase and lowercase letters.");
-//        return;
-//    }
+   // else if (!(std::any_of(pass.begin(), pass.end(), ::isupper) && std::any_of(pass.begin(), pass.end(), ::islower))) {
+   //     QMessageBox::warning(this, "Sign in", "Password must contain both uppercase and lowercase letters.");
+   //     return;
+   // }
     else if (!isAgeValid) {
         QMessageBox::warning(this, "Sign in", "Please enter a valid age.");
         return;
@@ -85,23 +85,23 @@ void signin::on_buttonBox_2_accepted()
         QMessageBox::warning(this, "Sign in", "Email already exists.");
         return;
     }
-//    else {
-//        bool hasUpperCase = false;
-//        bool hasLowerCase = false;
+   else {
+       bool hasUpperCase = false;
+       bool hasLowerCase = false;
 
-//        for (QChar c : pass) {
-//            if (c.isUpper()) {
-//                hasUpperCase = true;
-//            } else if (c.isLower()) {
-//                hasLowerCase = true;
-//            }
-//        }
+       for (QChar c : pass) {
+           if (c.isUpper()) {
+               hasUpperCase = true;
+           } else if (c.isLower()) {
+               hasLowerCase = true;
+           }
+       }
 
-//        if (!hasUpperCase || !hasLowerCase) {
-//            QMessageBox::warning(this, "Sign in", "Password must contain both uppercase and lowercase letters.");
-//            return;
-//        }
-//    }
+       if (!hasUpperCase || !hasLowerCase) {
+           QMessageBox::warning(this, "Sign in", "Password must contain both uppercase and lowercase letters.");
+           return;
+       }
+   }
 
 
     jsonObject[uname] = user;
