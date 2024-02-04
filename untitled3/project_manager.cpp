@@ -134,7 +134,7 @@ void Project_manager::createproject(const QString& orgName, const QString& proje
     QFile filetext(filePathtext);
     if (!filetext.open(QIODevice::ReadWrite)) {
         QMessageBox::warning(nullptr, "creat project", "Failed to open file.");
-                return;
+        return;
     }
 
     QByteArray fileDatatext = filetext.readAll();
@@ -239,7 +239,7 @@ void Project_manager::renameproject(const QString& orgName, const QString& oldpr
     fileproject.close();
 
     // Update the project name in the organization
-//    projectsArray.removeOne(oldprojectName);
+    //    projectsArray.removeOne(oldprojectName);
     for (int i = 0; i < projectsArray.size(); ++i) {
         if (projectsArray.at(i).toString() == oldprojectName) {
             projectsArray[i] = newprojectName;

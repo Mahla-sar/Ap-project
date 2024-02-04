@@ -31,8 +31,8 @@ void UserManager::logout() {
 
 
 bool UserManager::authenticateAndResetPassword(const QString& enteredUsername, const QString& enteredName,
-                                              const QString& enteredEmail, const int& enteredAge,
-                                              const QString& newPassword) {
+                                               const QString& enteredEmail, const int& enteredAge,
+                                               const QString& newPassword) {
     // Check if the user is logged in
     if (loggedInUsername.isEmpty()) {
         qDebug() << "No user is currently logged in.";

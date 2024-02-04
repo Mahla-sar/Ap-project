@@ -709,158 +709,158 @@ void Task_manager::setDueDate(const QString& taskName, const QString& dueDate) {
 
 
 
-    void Task_manager::addCommentToTask(const QString& taskName, const QString& commentText) {
-        // Access task.json
-        QString currentDir = QCoreApplication::applicationDirPath();
-        QString filePath = currentDir + QDir::separator() + "task.json";
+void Task_manager::addCommentToTask(const QString& taskName, const QString& commentText) {
+    // Access task.json
+    QString currentDir = QCoreApplication::applicationDirPath();
+    QString filePath = currentDir + QDir::separator() + "task.json";
 
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadWrite)) {
-            QMessageBox::warning(nullptr, "add Comment", "Failed to open task.json file.");
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadWrite)) {
+        QMessageBox::warning(nullptr, "add Comment", "Failed to open task.json file.");
 
-            return;
-        }
-
-        QByteArray fileData = file.readAll();
-        file.close();
-
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
-        QJsonObject jsonObject = jsonDoc.object();
-
-        // Check if the task exists
-        if (!jsonObject.contains(taskName)) {
-            QMessageBox::warning(nullptr, "add Comment", "Task does not exist in task.json.");
-
-            return;
-        }
-        // Get the task object
-        QJsonObject task = jsonObject.value(taskName).toObject();
-
-        // Create a new comment object
-        QJsonArray commentsArray = task.value("comments").toArray();
-        QJsonObject newComment;
-        QString loggedInUsername = UserManager::getLoggedInUsername();
-
-        newComment[loggedInUsername] = commentText;
-        //newComment["timestamp"] = QDateTime::currentDateTime().toString(Qt::ISODate);
-
-        // Add the new comment to the comments array
-        commentsArray.append(newComment);
-        task["comments"] = commentsArray;
-
-        // Save the changes back to task.json
-        jsonObject[taskName] = task;
-        jsonDoc.setObject(jsonObject);
-
-        file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-        file.write(jsonDoc.toJson());
-        file.close();
-        QMessageBox::warning(nullptr, "add Comment", "Comment added to the task successfully.");
-
+        return;
     }
-    void Task_manager::deleteCommentFromTask(const QString& taskName, const QString& username, const QString& commentText) {
-        QString currentDir = QCoreApplication::applicationDirPath();
-        QString filePath = currentDir + QDir::separator() + "task.json";
 
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadWrite)) {
-            QMessageBox::warning(nullptr, "delete Comment", "Failed to open task.json file.");
+    QByteArray fileData = file.readAll();
+    file.close();
 
-            return;
-        }
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    QJsonObject jsonObject = jsonDoc.object();
 
-        QByteArray fileData = file.readAll();
-        file.close();
+    // Check if the task exists
+    if (!jsonObject.contains(taskName)) {
+        QMessageBox::warning(nullptr, "add Comment", "Task does not exist in task.json.");
 
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
-        QJsonObject jsonObject = jsonDoc.object();
-
-        // Check if the task exists
-        if (!jsonObject.contains(taskName)) {
-            QMessageBox::warning(nullptr, "Delete Comment", "Task does not exist in task.json.");
-
-            return;
-        }
-
-        // Get the task object
-        QJsonObject task = jsonObject.value(taskName).toObject();
-
-        // Check if the task has comments
-        if (!task.contains("comments")) {
-            QMessageBox::warning(nullptr, "delete Comment", "No comments found for the task.");
-
-            return;
-        }
-
-        // Get the comments array
-        QJsonArray commentsArray = task.value("comments").toArray();
-
-        // Find and remove the comment with the specified username and comment text
-        for (int i = 0; i < commentsArray.size(); ++i) {
-            QJsonObject comment = commentsArray[i].toObject();
-            if (comment.contains(username) && comment.value(username).toString() == commentText) {
-                commentsArray.removeAt(i);
-                QMessageBox::warning(nullptr, "Delete Comment","Comment deleted from the task successfully.");
-
-                break; // Assuming only one comment with the matching text per user can exist, remove the break if multiple comments with the same text per user are allowed
-            }
-        }
-
-        // Update the comments array in the task object
-        task["comments"] = commentsArray;
-
-        // Update the task object in the JSON
-        jsonObject[taskName] = task;
-        jsonDoc.setObject(jsonObject);
-
-        file.open(QIODevice::WriteOnly | QIODevice::Truncate);
-        file.write(jsonDoc.toJson());
-        file.close();
+        return;
     }
+    // Get the task object
+    QJsonObject task = jsonObject.value(taskName).toObject();
+
+    // Create a new comment object
+    QJsonArray commentsArray = task.value("comments").toArray();
+    QJsonObject newComment;
+    QString loggedInUsername = UserManager::getLoggedInUsername();
+
+    newComment[loggedInUsername] = commentText;
+    //newComment["timestamp"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+
+    // Add the new comment to the comments array
+    commentsArray.append(newComment);
+    task["comments"] = commentsArray;
+
+    // Save the changes back to task.json
+    jsonObject[taskName] = task;
+    jsonDoc.setObject(jsonObject);
+
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(jsonDoc.toJson());
+    file.close();
+    QMessageBox::warning(nullptr, "add Comment", "Comment added to the task successfully.");
+
+}
+void Task_manager::deleteCommentFromTask(const QString& taskName, const QString& username, const QString& commentText) {
+    QString currentDir = QCoreApplication::applicationDirPath();
+    QString filePath = currentDir + QDir::separator() + "task.json";
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadWrite)) {
+        QMessageBox::warning(nullptr, "delete Comment", "Failed to open task.json file.");
+
+        return;
+    }
+
+    QByteArray fileData = file.readAll();
+    file.close();
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(fileData);
+    QJsonObject jsonObject = jsonDoc.object();
+
+    // Check if the task exists
+    if (!jsonObject.contains(taskName)) {
+        QMessageBox::warning(nullptr, "Delete Comment", "Task does not exist in task.json.");
+
+        return;
+    }
+
+    // Get the task object
+    QJsonObject task = jsonObject.value(taskName).toObject();
+
+    // Check if the task has comments
+    if (!task.contains("comments")) {
+        QMessageBox::warning(nullptr, "delete Comment", "No comments found for the task.");
+
+        return;
+    }
+
+    // Get the comments array
+    QJsonArray commentsArray = task.value("comments").toArray();
+
+    // Find and remove the comment with the specified username and comment text
+    for (int i = 0; i < commentsArray.size(); ++i) {
+        QJsonObject comment = commentsArray[i].toObject();
+        if (comment.contains(username) && comment.value(username).toString() == commentText) {
+            commentsArray.removeAt(i);
+            QMessageBox::warning(nullptr, "Delete Comment","Comment deleted from the task successfully.");
+
+            break; // Assuming only one comment with the matching text per user can exist, remove the break if multiple comments with the same text per user are allowed
+        }
+    }
+
+    // Update the comments array in the task object
+    task["comments"] = commentsArray;
+
+    // Update the task object in the JSON
+    jsonObject[taskName] = task;
+    jsonDoc.setObject(jsonObject);
+
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.write(jsonDoc.toJson());
+    file.close();
+}
 
 QVector<QString> Task_manager::taskNamesSorted(const QJsonObject& taskJsonObject) {
-        QVector<QString> taskNames;
+    QVector<QString> taskNames;
 
-        // Iterate through the taskanization names and add them to the list
-        for (auto it = taskJsonObject.begin(); it != taskJsonObject.end(); ++it) {
-            taskNames.append(it.key());
-        }
-
-        // Sort the list alphabetically
-        taskNames.sort();
-        QMessageBox::information(nullptr, "Task Names Sorted", "Task names have been sorted alphabetically.");
-        return taskNames;
+    // Iterate through the taskanization names and add them to the list
+    for (auto it = taskJsonObject.begin(); it != taskJsonObject.end(); ++it) {
+        taskNames.append(it.key());
     }
 
+    // Sort the list alphabetically
+    taskNames.sort();
+    QMessageBox::information(nullptr, "Task Names Sorted", "Task names have been sorted alphabetically.");
+    return taskNames;
+}
 
 
-    QVector<QString> Task_manager::sorttasksByTime(const QJsonObject& taskJsonObject) {
-        QVector<QString> taskNamesSortedByTime;
 
-        // Create a vector to store pairs of time and taskanization name
-        QVector<QPair<QString, QString>> taskTimePairs;
+QVector<QString> Task_manager::sorttasksByTime(const QJsonObject& taskJsonObject) {
+    QVector<QString> taskNamesSortedByTime;
 
-        // Iterate through the taskanizations and extract the date strings and taskanization names
-        for (auto it = taskJsonObject.begin(); it != taskJsonObject.end(); ++it) {
-            QJsonObject taskObject = it.value().toObject();
-            QString timeToBuildString = taskObject["dueDate"].toString();
-            QString taskName = it.key();
+    // Create a vector to store pairs of time and taskanization name
+    QVector<QPair<QString, QString>> taskTimePairs;
 
-            // Add the pair of time and taskanization name to the vector
-            taskTimePairs.append(qMakePair(timeToBuildString, taskName));
-        }
+    // Iterate through the taskanizations and extract the date strings and taskanization names
+    for (auto it = taskJsonObject.begin(); it != taskJsonObject.end(); ++it) {
+        QJsonObject taskObject = it.value().toObject();
+        QString timeToBuildString = taskObject["dueDate"].toString();
+        QString taskName = it.key();
 
-        // Sort the vector based on time strings
-        std::sort(taskTimePairs.begin(), taskTimePairs.end(), [](const QPair<QString, QString>& a, const QPair<QString, QString>& b) {
-            return a.first < b.first; // Compare time strings
-        });
-
-        // Extract the taskanization names from the sorted pairs
-        for (const auto& pair : taskTimePairs) {
-            taskNamesSortedByTime.append(pair.second);
-        }
-
-        QMessageBox::information(nullptr, "Tasks Sorted by Time", "Tasks have been sorted by due date.");
-        return taskNamesSortedByTime;
+        // Add the pair of time and taskanization name to the vector
+        taskTimePairs.append(qMakePair(timeToBuildString, taskName));
     }
+
+    // Sort the vector based on time strings
+    std::sort(taskTimePairs.begin(), taskTimePairs.end(), [](const QPair<QString, QString>& a, const QPair<QString, QString>& b) {
+        return a.first < b.first; // Compare time strings
+    });
+
+    // Extract the taskanization names from the sorted pairs
+    for (const auto& pair : taskTimePairs) {
+        taskNamesSortedByTime.append(pair.second);
+    }
+
+    QMessageBox::information(nullptr, "Tasks Sorted by Time", "Tasks have been sorted by due date.");
+    return taskNamesSortedByTime;
+}
 

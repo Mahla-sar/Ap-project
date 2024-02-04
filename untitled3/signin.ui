@@ -16,8 +16,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>30</y>
+     <x>80</x>
+     <y>40</y>
      <width>191</width>
      <height>51</height>
     </rect>
@@ -48,12 +48,8 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="email">
-      <property name="text">
-       <string>Email</string>
-      </property>
-     </widget>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="username_2"/>
     </item>
     <item row="1" column="0">
      <widget class="QLabel" name="password">
@@ -62,12 +58,8 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="age">
-      <property name="text">
-       <string>Age</string>
-      </property>
-     </widget>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="password_2"/>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="name">
@@ -76,20 +68,35 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="username_2"/>
-    </item>
-    <item row="1" column="1">
-     <widget class="QLineEdit" name="password_2"/>
-    </item>
     <item row="2" column="1">
      <widget class="QLineEdit" name="name_2"/>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="email">
+      <property name="text">
+       <string>Email</string>
+      </property>
+     </widget>
     </item>
     <item row="3" column="1">
      <widget class="QLineEdit" name="email_2"/>
     </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="age">
+      <property name="text">
+       <string>Age</string>
+      </property>
+     </widget>
+    </item>
     <item row="4" column="1">
      <widget class="QLineEdit" name="age_2"/>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="gender">
+      <property name="text">
+       <string>gender</string>
+      </property>
+     </widget>
     </item>
     <item row="5" column="1">
      <widget class="QComboBox" name="comboBox">
@@ -118,13 +125,6 @@
         <string/>
        </property>
       </item>
-     </widget>
-    </item>
-    <item row="5" column="0">
-     <widget class="QLabel" name="gender">
-      <property name="text">
-       <string>gender</string>
-      </property>
      </widget>
     </item>
     <item row="6" column="1">

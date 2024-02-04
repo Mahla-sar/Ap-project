@@ -1,5 +1,6 @@
-#include "new_org.h"
-#include "ui_new_org.h"
+#include "new_team.h"
+#include "ui_new_team.h"
+#include "team_manager.h".h"
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
@@ -12,25 +13,28 @@
 #include "taski.h"
 #include "userManager.h"
 #include "org_manager.h"
-
-new_org::new_org(QWidget *parent)
-    : QDialog(parent),
-    ui(new Ui::new_org)
+new_team::new_team(QWidget *parent)
+    : QDialog(parent)
+    , ui(new Ui::new_team)
 {
     ui->setupUi(this);
 }
 
-new_org::~new_org()
+new_team::~new_team()
 {
     delete ui;
 }
 
-void new_org::on_buttonBox_accepted()
+void new_team::on_buttonBox_accepted()
 {
-    QString name = ui->lineEdit->text();
-    org_manager my_org;
-    my_org.creat_organization(name);
+
+    QString teamname = ui->lineEdit->text();
+    team_manager my_team;
+    QString orgname=org_manager::get_organization();
+    my_team.createTeam(orgname,teamname);
     QMessageBox::information(this, "Organization Created", "The organization has been created successfully.");
-    emit neworg_added(name);
+    emit newteam_added(teamname);
     this->close();
 }
+
+

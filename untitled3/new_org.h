@@ -17,7 +17,8 @@ public:
 
 private slots:
     void on_buttonBox_accepted();
-
+signals:
+    void neworg_added(QString);
 private:
     Ui::new_org *ui;
 };

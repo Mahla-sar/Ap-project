@@ -463,13 +463,13 @@ void org_manager::removeMemberFromOrganization(const QString& orgName, const QSt
             membersArray.removeAt(i);
             break;
         }
-    for (int i=0;i<adminsArray.size();++i)
-    {
-        if(adminsArray.at(i).toString()==memberName){
-            adminsArray.removeAt(i);
-            break;
+        for (int i=0;i<adminsArray.size();++i)
+        {
+            if(adminsArray.at(i).toString()==memberName){
+                adminsArray.removeAt(i);
+                break;
+            }
         }
-    }
 
     }
     org["admins"]=adminsArray;

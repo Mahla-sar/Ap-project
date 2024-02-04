@@ -25,6 +25,8 @@ private slots:
 
     void on_buttonBox_2_rejected();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::login *ui;
     // QString myname;

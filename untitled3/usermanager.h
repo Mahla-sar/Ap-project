@@ -13,8 +13,8 @@ public:
     void resetPassword(const QJsonObject &userData, const QString &newPassword);
 
     bool authenticateAndResetPassword(const QString& enteredUsername, const QString& enteredName,
-                                                  const QString& enteredEmail, const int& enteredAge,
-                                                  const QString& newPassword);
+                                      const QString& enteredEmail, const int& enteredAge,
+                                      const QString& newPassword);
 
 
 private:

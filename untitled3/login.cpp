@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include "taski.h"
 #include "userManager.h"
+#include "forgetpass.h"
 
 login::login(QWidget *parent)
     : QDialog(parent)
@@ -77,3 +78,10 @@ QString login::getMyName() const
 {
     return myname;
 }
+
+void login::on_pushButton_clicked()
+{
+    forgetpass *f=new forgetpass;
+    f->show();
+}
+

@@ -1,5 +1,5 @@
-#include "new_org.h"
-#include "ui_new_org.h"
+#include "new_pro.h"
+#include "ui_new_pro.h"
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
@@ -10,27 +10,32 @@
 #include <QCryptographicHash>
 #include <QMessageBox>
 #include "taski.h"
-#include "userManager.h"
+#include "project_manager.h"
 #include "org_manager.h"
 
-new_org::new_org(QWidget *parent)
-    : QDialog(parent),
-    ui(new Ui::new_org)
+new_pro::new_pro(QWidget *parent)
+    : QDialog(parent)
+    , ui(new Ui::new_pro)
 {
     ui->setupUi(this);
 }
 
-new_org::~new_org()
+new_pro::~new_pro()
 {
     delete ui;
 }
 
-void new_org::on_buttonBox_accepted()
+
+
+
+void new_pro::on_buttonBox_accepted()
 {
-    QString name = ui->lineEdit->text();
-    org_manager my_org;
-    my_org.creat_organization(name);
+    QString proname = ui->lineEdit->text();
+    Project_manager my_pro;
+    QString orgname=org_manager::get_organization();
+    my_pro.createproject(orgname,proname);
     QMessageBox::information(this, "Organization Created", "The organization has been created successfully.");
-    emit neworg_added(name);
+    emit newpro_added(proname);
     this->close();
 }
+

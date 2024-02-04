@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>edit_team</class>
+ <widget class="QDialog" name="edit_team">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>604</width>
+    <height>410</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QWidget" name="formLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>60</y>
+     <width>206</width>
+     <height>238</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="orglabel">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="namebutton">
+      <property name="text">
+       <string>change Team's name</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="promotebutton">
+      <property name="text">
+       <string>promote a member to head</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="demotebutton">
+      <property name="text">
+       <string>demote an head to memeber</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="remove">
+      <property name="text">
+       <string>remove member</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="add_button">
+      <property name="text">
+       <string>Add member </string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="deletbutton">
+      <property name="text">
+       <string>delete the Team</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>90</y>
+     <width>291</width>
+     <height>171</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_1">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="textbox"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="button">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
